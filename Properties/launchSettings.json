@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "EmployeeShifts": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "applicationUrl": ""
+    }
+  }
+}
