@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DAA_P03.Parte1_Ordenamiento.Base;
 
 namespace DAA_P03.Parte2_Planificacion.Modelo
 {
@@ -10,7 +11,7 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
     /// Contiene la asignación de turnos a empleados para cada día.
     /// plan[día][turno] = lista de índices de empleados asignados al turno t del día d.
     /// </summary>
-    public class SolucionPlanificacion
+    public class SolucionPlanificacion : Solucion
     {
         /// <summary>
         /// Plan de asignación: plan[día][turno] = lista de índices de empleados.
@@ -35,6 +36,47 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
         /// Función objetivo: f(x) = SUMA(satisfaccion) + SUMA(turnos_cubiertos) * 100
         /// </summary>
         public double FuncionObjetivo { get; set; }
+
+        /// <summary>
+        /// Indica si la solución es válida (todas las estructuras están inicializadas correctamente).
+        /// </summary>
+        public override bool EsValida
+        {
+            get
+            {
+                if (Plan == null) return false;
+                if (Plan.Length != NumDias) return false;
+                
+                for (int d = 0; d < NumDias; d++)
+                {
+                    if (Plan[d] == null || Plan[d].Length != NumTurnos) return false;
+                    for (int t = 0; t < NumTurnos; t++)
+                    {
+                        if (Plan[d][t] == null) return false;
+                    }
+                }
+                
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Obtiene información detallada de la solución.
+        /// </summary>
+        /// <returns>Información formateada de la solución.</returns>
+        public override string ObtenerInfo()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("=== INFORMACIÓN DE LA SOLUCIÓN ===");
+            sb.AppendLine($"Días planificados: {NumDias}");
+            sb.AppendLine($"Turnos por día: {NumTurnos}");
+            sb.AppendLine($"Empleados: {NumEmpleados}");
+            sb.AppendLine($"Satisfacción Total: {SatisfaccionTotal:F2}");
+            sb.AppendLine($"Turnos Cubiertos: {TurnosCubiertos}");
+            sb.AppendLine($"Función Objetivo: {FuncionObjetivo:F2}");
+            sb.AppendLine($"Válida: {(EsValida ? "Sí" : "No")}");
+            return sb.ToString();
+        }
 
         public SolucionPlanificacion(int numDias, int numTurnos, int numEmpleados)
         {

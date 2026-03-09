@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using DAA_P03.Parte1_Ordenamiento.Base;
 using DAA_P03.Parte2_Planificacion.Dominio;
 
 namespace DAA_P03.Parte2_Planificacion.Modelo
@@ -9,7 +10,7 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
     /// Representa una instancia del problema de planificación de empleados.
     /// Contiene empleados, turnos y matrices de satisfacción/cobertura.
     /// </summary>
-    public class InstanciaPlanificacion
+    public class InstanciaPlanificacion : Instancia
     {
         /// <summary>
         /// Lista de empleados con sus propiedades (nombre, días de descanso).
@@ -43,6 +44,28 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
 
         public int NumEmpleados => Empleados?.Count ?? 0;
         public int NumTurnos => Turnos?.Count ?? 0;
+
+        /// <summary>
+        /// Implementa Tamaño como el producto de empleados × días × turnos (complejidad de la instancia).
+        /// </summary>
+        public override int Tamaño => NumEmpleados * NumDias * NumTurnos;
+
+        /// <summary>
+        /// Obtiene una copia de la instancia.
+        /// </summary>
+        /// <returns>Una nueva instancia con los mismos datos.</returns>
+        public override Instancia ObtenerCopia()
+        {
+            var copia = new InstanciaPlanificacion
+            {
+                Empleados = new List<Empleado>(Empleados),
+                NumDias = NumDias,
+                Turnos = new List<string>(Turnos),
+                Satisfaccion = (int[,,])Satisfaccion?.Clone(),
+                CoberturaMínima = (int[,])CoberturaMínima?.Clone()
+            };
+            return copia;
+        }
 
         /// <summary>
         /// Constructor predeterminado.
