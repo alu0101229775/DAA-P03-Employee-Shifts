@@ -66,55 +66,79 @@ namespace DAA_P03.Nucleos.Algoritmos.Ordenamiento
         }
 
         /// <summary>
-        /// Divide el array usando la técnica de partición de QuickSort.
-        /// Selecciona el último elemento como pivote y particiona el array alrededor de él.
+        /// Divide el array usando la técnica de partición in-place de QuickSort (Algoritmo de Lomuto).
+        /// Reorganiza el array de forma que los elementos menores al pivote queden a la izquierda
+        /// y los mayores a la derecha, usando intercambios (swaps).
         /// </summary>
         /// <param name="instancia">El array a particionar (InstanceSorting).</param>
-        /// <returns>Array con dos instancias (partición izquierda y derecha).</returns>
+        /// <returns>Array con dos instancias (partición izquierda e índice de partición).</returns>
         protected override object[] Dividir(object instancia)
         {
             InstanceSorting instance = instancia as InstanceSorting ??
                 throw new ArgumentException("La instancia debe ser de tipo InstanceSorting.");
 
             int[] numeros = (int[])instance.Numeros.Clone();
-            int[] copia = (int[])numeros.Clone();
-
-            // Usar el último elemento como pivote (estrategia simple)
-            int pivote = copia[copia.Length - 1];
-            int[] izquierda = new int[0];
-            int[] derecha = new int[0];
-            int[] igual = new int[0];
-
-            // Particionar en tres partes: menor, igual, mayor
-            System.Collections.Generic.List<int> menores = new System.Collections.Generic.List<int>();
-            System.Collections.Generic.List<int> iguales = new System.Collections.Generic.List<int>();
-            System.Collections.Generic.List<int> mayores = new System.Collections.Generic.List<int>();
-
-            for (int i = 0; i < copia.Length; i++)
-            {
-                _comparaciones++;
-                if (copia[i] < pivote)
-                    menores.Add(copia[i]);
-                else if (copia[i] == pivote)
-                    iguales.Add(copia[i]);
-                else
-                    mayores.Add(copia[i]);
-            }
-
-            // Crear dos subproblemas: menores y (iguales + mayores)
-            izquierda = menores.ToArray();
-            derecha = new int[iguales.Count + mayores.Count];
-            int idx = 0;
-            foreach (int val in iguales) derecha[idx++] = val;
-            foreach (int val in mayores) derecha[idx++] = val;
-
+            
+            // Particionamiento in-place usando el algoritmo de Lomuto
+            int pivotIndex = ParticionarLomuto(numeros, 0, numeros.Length - 1);
+            
             NumOperaciones++;
+
+            // Crear dos subproblemas: izquierda (0 a pivotIndex-1) y derecha (pivotIndex+1 a fin)
+            int[] izquierda = new int[pivotIndex];
+            int[] derecha = new int[numeros.Length - pivotIndex - 1];
+            
+            Array.Copy(numeros, 0, izquierda, 0, pivotIndex);
+            Array.Copy(numeros, pivotIndex + 1, derecha, 0, numeros.Length - pivotIndex - 1);
 
             return new object[]
             {
                 new InstanceSorting(izquierda),
                 new InstanceSorting(derecha)
             };
+        }
+
+        /// <summary>
+        /// Algoritmo de partición in-place de Lomuto.
+        /// Reorganiza el array de forma que todos los elementos menores al pivote
+        /// quedan a la izquierda y los mayores a la derecha.
+        /// </summary>
+        /// <param name="arr">Array a particionar.</param>
+        /// <param name="bajo">Índice inferior.</param>
+        /// <param name="alto">Índice superior (elemento pivote).</param>
+        /// <returns>Índice final del pivote después de la partición.</returns>
+        private int ParticionarLomuto(int[] arr, int bajo, int alto)
+        {
+            int pivote = arr[alto];
+            int i = bajo - 1;
+
+            for (int j = bajo; j < alto; j++)
+            {
+                _comparaciones++;
+                if (arr[j] < pivote)
+                {
+                    i++;
+                    // Intercambiar arr[i] y arr[j]
+                    Intercambiar(arr, i, j);
+                    _intercambios++;
+                }
+            }
+            
+            // Intercambiar arr[i+1] y arr[alto] (pivote)
+            Intercambiar(arr, i + 1, alto);
+            _intercambios++;
+            
+            return i + 1;
+        }
+
+        /// <summary>
+        /// Intercambia dos elementos en el array.
+        /// </summary>
+        private void Intercambiar(int[] arr, int i, int j)
+        {
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
         }
 
         /// <summary>
