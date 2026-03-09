@@ -1,33 +1,33 @@
 using System;
 using Newtonsoft.Json;
 
-namespace DAA_P03.Core.EmployeeScheduling
+namespace DAA_P03.Nucleos.PlanificacionEmpleados
 {
     /// <summary>
     /// Representa un empleado en el problema de planificación.
     /// </summary>
-    public class Employee
+    public class Empleado
     {
         /// <summary>
         /// Nombre del empleado.
         /// </summary>
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public string Nombre { get; set; }
 
         /// <summary>
         /// Número de días de descanso requeridos para este empleado.
         /// </summary>
         [JsonProperty("daysOff")]
-        public int DaysOff { get; set; } = 1;
+        public int DiasDescanso { get; set; } = 1;
 
-        public Employee() { }
+        public Empleado() { }
 
-        public Employee(string name, int daysOff = 1)
+        public Empleado(string nombre, int diasDescanso = 1)
         {
-            Name = name;
-            DaysOff = daysOff;
+            Nombre = nombre;
+            DiasDescanso = diasDescanso;
         }
 
-        public override string ToString() => $"{Name} ({DaysOff} descansos)";
+        public override string ToString() => $"{Nombre} ({DiasDescanso} descansos)";
     }
 }

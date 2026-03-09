@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace DAA_P03.Core.Data
+namespace DAA_P03.Nucleos.Datos
 {
     /// <summary>
     /// Representa una instancia de un problema de ordenamiento.

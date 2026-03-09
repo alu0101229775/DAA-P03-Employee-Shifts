@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace DAA_P03.Core.Algorithms
+namespace DAA_P03.Nucleos.Algoritmos
 {
     /// <summary>
     /// Clase base abstracta que representa un algoritmo genérico.
@@ -48,35 +48,37 @@ namespace DAA_P03.Core.Algorithms
 
         /// <summary>
         /// Resuelve un problema y mide el tiempo de ejecución.
-        /// Este método es el encargado de llamar al método Resolver y medir el tiempo.
         /// </summary>
-        /// <param name="instancia">La instancia del problema a resolver.</param>
-        /// <returns>La solución del problema.</returns>
-        public virtual object ResolverConTiempo(object instancia)
+        /// <param name="instancia">La instancia a resolver.</param>
+        /// <returns>La solución obtenida.</returns>
+        public object ResolverConTiempo(object instancia)
         {
-            Stopwatch sw = Stopwatch.StartNew();
-            object solucion = Resolver(instancia);
-            sw.Stop();
-            TiempoEjecucion = sw.ElapsedMilliseconds;
-            return solucion;
+            var stopwatch = Stopwatch.StartNew();
+            object resultado = Resolver(instancia);
+            stopwatch.Stop();
+            TiempoEjecucion = stopwatch.ElapsedMilliseconds;
+            return resultado;
         }
 
         /// <summary>
-        /// Obtiene la información del algoritmo en formato string legible.
+        /// Obtiene información detallada del algoritmo.
         /// </summary>
-        /// <returns>Información del algoritmo.</returns>
+        /// <returns>Información formateada del algoritmo.</returns>
         public virtual string ObtenerInfo()
         {
-            return $"Algoritmo: {Nombre}\nDescripción: {Descripcion}\nÚltimo tiempo de ejecución: {TiempoEjecucion} ms";
+            return $"Algoritmo: {Nombre}\n" +
+                   $"Descripción: {Descripcion}\n" +
+                   $"Tiempo de ejecución: {TiempoEjecucion}ms\n" +
+                   $"Operaciones: {NumOperaciones}";
         }
 
         /// <summary>
-        /// Reinicia los contadores internos del algoritmo.
+        /// Obtiene una representación en string del algoritmo.
         /// </summary>
-        public virtual void Reiniciar()
+        /// <returns>Información breve del algoritmo.</returns>
+        public override string ToString()
         {
-            NumOperaciones = 0;
-            TiempoEjecucion = 0;
+            return $"{Nombre} ({TiempoEjecucion}ms)";
         }
     }
 }

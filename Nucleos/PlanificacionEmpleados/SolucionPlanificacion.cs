@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DAA_P03.Core.EmployeeScheduling
+namespace DAA_P03.Nucleos.PlanificacionEmpleados
 {
     /// <summary>
     /// Representa la solución al problema de planificación de empleados.
     /// Contiene la asignación de turnos a empleados para cada día.
-    /// plan[d][t] = lista de índices de empleados asignados al turno t del día d.
+    /// plan[día][turno] = lista de índices de empleados asignados al turno t del día d.
     /// </summary>
-    public class SolutionPlanning
+    public class SolucionPlanificacion
     {
         /// <summary>
         /// Plan de asignación: plan[día][turno] = lista de índices de empleados.
@@ -36,7 +36,7 @@ namespace DAA_P03.Core.EmployeeScheduling
         /// </summary>
         public double FuncionObjetivo { get; set; }
 
-        public SolutionPlanning(int numDias, int numTurnos, int numEmpleados)
+        public SolucionPlanificacion(int numDias, int numTurnos, int numEmpleados)
         {
             NumDias = numDias;
             NumTurnos = numTurnos;
@@ -98,7 +98,7 @@ namespace DAA_P03.Core.EmployeeScheduling
         /// <summary>
         /// Representa la solución en forma de tabla legible.
         /// </summary>
-        public string ObtenerRepresentacionTabla(InstancePlanning instancia)
+        public string ObtenerRepresentacionTabla(InstanciaPlanificacion instancia)
         {
             var empleados = instancia.ObtenerNombresEmpleados();
             var turnos = instancia.Turnos;
@@ -148,12 +148,12 @@ namespace DAA_P03.Core.EmployeeScheduling
         /// <summary>
         /// Combina dos soluciones (de días consecutivos).
         /// </summary>
-        public SolutionPlanning Combinar(SolutionPlanning otra)
+        public SolucionPlanificacion Combinar(SolucionPlanificacion otra)
         {
             if (otra == null)
                 throw new ArgumentNullException(nameof(otra));
 
-            var combinada = new SolutionPlanning(NumDias + otra.NumDias, NumTurnos, NumEmpleados);
+            var combinada = new SolucionPlanificacion(NumDias + otra.NumDias, NumTurnos, NumEmpleados);
 
             // Copiar la primera solución
             for (int d = 0; d < NumDias; d++)

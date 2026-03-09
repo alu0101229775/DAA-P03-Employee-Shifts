@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DAA_P03.Core.EmployeeScheduling
+namespace DAA_P03.Nucleos.PlanificacionEmpleados
 {
     /// <summary>
     /// Algoritmo de Divide y Vencerás para planificación de empleados.
@@ -12,7 +12,7 @@ namespace DAA_P03.Core.EmployeeScheduling
     /// - Conquista: Resuelve recursivamente cada mitad
     /// - Combinación: Mezcla las soluciones
     /// </summary>
-    public class PlanificacionDivideYVenceras : Core.Algorithms.DivideYVenceras
+    public class PlanificacionDivideYVenceras : Nucleos.Algoritmos.DivideYVenceras
     {
         public PlanificacionDivideYVenceras()
         {
@@ -25,8 +25,8 @@ namespace DAA_P03.Core.EmployeeScheduling
         /// </summary>
         protected override bool EsPequenio(object instancia)
         {
-            var inst = instancia as InstancePlanning ??
-                throw new ArgumentException("Debe ser InstancePlanning.");
+            var inst = instancia as InstanciaPlanificacion ??
+                throw new ArgumentException("Debe ser InstanciaPlanificacion.");
             return inst.NumDias <= 1;
         }
 
@@ -36,11 +36,11 @@ namespace DAA_P03.Core.EmployeeScheduling
         /// </summary>
         protected override object ResolverPequenio(object instancia)
         {
-            var inst = instancia as InstancePlanning ??
-                throw new ArgumentException("Debe ser InstancePlanning.");
+            var inst = instancia as InstanciaPlanificacion ??
+                throw new ArgumentException("Debe ser InstanciaPlanificacion.");
 
             NumOperaciones++;
-            var sol = new SolutionPlanning(inst.NumDias, inst.NumTurnos, inst.NumEmpleados);
+            var sol = new SolucionPlanificacion(inst.NumDias, inst.NumTurnos, inst.NumEmpleados);
 
             double satisfaccionTotal = 0;
             int turnosCubiertos = 0;
@@ -53,10 +53,10 @@ namespace DAA_P03.Core.EmployeeScheduling
                     int coberturaMínima = inst.CoberturaMínima[d, t];
 
                     // Obtener empleados ordenados por satisfacción descendente
-                    var empleados = new List<(int id, int sat)>();
+                    var empleados = new List<(int id, double sat)>();
                     for (int e = 0; e < inst.NumEmpleados; e++)
                     {
-                        empleados.Add((e, inst.Satisfaccion[e, d, t]));
+                        empleados.Add((e, inst.Satisfaccion[d, e, t]));
                     }
                     empleados = empleados.OrderByDescending(x => x.sat).ToList();
 
@@ -86,8 +86,8 @@ namespace DAA_P03.Core.EmployeeScheduling
         /// </summary>
         protected override object[] Dividir(object instancia)
         {
-            var inst = instancia as InstancePlanning ??
-                throw new ArgumentException("Debe ser InstancePlanning.");
+            var inst = instancia as InstanciaPlanificacion ??
+                throw new ArgumentException("Debe ser InstanciaPlanificacion.");
 
             NumOperaciones++;
 
@@ -103,10 +103,10 @@ namespace DAA_P03.Core.EmployeeScheduling
         /// </summary>
         protected override object Combinar(object solucion1, object solucion2)
         {
-            var sol1 = solucion1 as SolutionPlanning ??
-                throw new ArgumentException("Solución 1 debe ser SolutionPlanning.");
-            var sol2 = solucion2 as SolutionPlanning ??
-                throw new ArgumentException("Solución 2 debe ser SolutionPlanning.");
+            var sol1 = solucion1 as SolucionPlanificacion ??
+                throw new ArgumentException("Solución 1 debe ser SolucionPlanificacion.");
+            var sol2 = solucion2 as SolucionPlanificacion ??
+                throw new ArgumentException("Solución 2 debe ser SolucionPlanificacion.");
 
             NumOperaciones++;
 
@@ -119,10 +119,10 @@ namespace DAA_P03.Core.EmployeeScheduling
         public override object Resolver(object instancia)
         {
             NumOperaciones = 0;
-            var inst = instancia as InstancePlanning;
+            var inst = instancia as InstanciaPlanificacion;
 
             if (inst == null)
-                throw new ArgumentException("Debe ser InstancePlanning.");
+                throw new ArgumentException("Debe ser InstanciaPlanificacion.");
             if (!inst.EsValida())
                 throw new InvalidOperationException("Instancia inválida.");
 

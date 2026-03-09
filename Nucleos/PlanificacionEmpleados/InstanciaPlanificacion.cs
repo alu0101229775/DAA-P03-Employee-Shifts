@@ -2,19 +2,19 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace DAA_P03.Core.EmployeeScheduling
+namespace DAA_P03.Nucleos.PlanificacionEmpleados
 {
     /// <summary>
     /// Representa una instancia del problema de planificación de empleados.
     /// Contiene empleados, turnos y matrices de satisfacción/cobertura.
     /// </summary>
-    public class InstancePlanning
+    public class InstanciaPlanificacion
     {
         /// <summary>
         /// Lista de empleados con sus propiedades (nombre, días de descanso).
         /// </summary>
         [JsonProperty("employees")]
-        public List<Employee> Empleados { get; set; } = new List<Employee>();
+        public List<Empleado> Empleados { get; set; } = new List<Empleado>();
 
         /// <summary>
         /// Número de días a planificar (horizonte de planificación).
@@ -23,40 +23,53 @@ namespace DAA_P03.Core.EmployeeScheduling
         public int NumDias { get; set; }
 
         /// <summary>
-        /// Lista de turnos disponibles, cada uno con nombre y cobertura mínima.
+        /// Lista de turnos disponibles.
         /// </summary>
         [JsonProperty("shifts")]
         public List<string> Turnos { get; set; } = new List<string>();
 
         /// <summary>
-        /// Matriz de satisfacción: A[e][d][t] = satisfacción del empleado e, día d, turno t.
+        /// Matriz de satisfacción: Satisfaccion[e][d][t] = satisfacción del empleado e, día d, turno t.
         /// </summary>
         [JsonIgnore]
         public int[,,] Satisfaccion { get; set; }
 
         /// <summary>
-        /// Matriz de cobertura mínima: B[d][t] = mínimo de empleados para día d, turno t.
+        /// Matriz de cobertura mínima: CoberturaMínima[d][t] = mínimo de empleados para día d, turno t.
         /// </summary>
         [JsonIgnore]
         public int[,] CoberturaMínima { get; set; }
-
-        /// <summary>
-        /// Array de días de descanso: C[e] = días de descanso del empleado e.
-        /// </summary>
-        [JsonIgnore]
-        public int[] DiasDescanso { get; set; }
 
         public int NumEmpleados => Empleados?.Count ?? 0;
         public int NumTurnos => Turnos?.Count ?? 0;
 
         /// <summary>
-        /// Obtiene los nombres de los empleados para compatibilidad.
+        /// Constructor predeterminado.
+        /// </summary>
+        public InstanciaPlanificacion()
+        {
+        }
+
+        /// <summary>
+        /// Constructor que inicializa las matrices de la instancia.
+        /// </summary>
+        public InstanciaPlanificacion(int numEmpleados, int numDias, int numTurnos)
+        {
+            NumDias = numDias;
+            Turnos = new List<string>();
+            Empleados = new List<Empleado>();
+            Satisfaccion = new int[numEmpleados, numDias, numTurnos];
+            CoberturaMínima = new int[numDias, numTurnos];
+        }
+
+        /// <summary>
+        /// Obtiene los nombres de los empleados.
         /// </summary>
         public List<string> ObtenerNombresEmpleados()
         {
             var nombres = new List<string>();
             foreach (var emp in Empleados)
-                nombres.Add(emp.Name);
+                nombres.Add(emp.Nombre);
             return nombres;
         }
 
@@ -67,7 +80,7 @@ namespace DAA_P03.Core.EmployeeScheduling
         {
             var diasDescanso = new int[NumEmpleados];
             for (int i = 0; i < NumEmpleados; i++)
-                diasDescanso[i] = Empleados[i].DaysOff;
+                diasDescanso[i] = Empleados[i].DiasDescanso;
             return diasDescanso;
         }
 
@@ -89,15 +102,15 @@ namespace DAA_P03.Core.EmployeeScheduling
             return true;
         }
 
-        public InstancePlanning ObtenerSubinstancia(int diaInicio, int diaFin)
+        public InstanciaPlanificacion ObtenerSubinstancia(int diaInicio, int diaFin)
         {
             if (diaInicio < 0 || diaFin >= NumDias || diaInicio > diaFin)
                 throw new ArgumentException("Rango de días inválido.");
 
             int numDiasNuevos = diaFin - diaInicio + 1;
-            var sub = new InstancePlanning
+            var sub = new InstanciaPlanificacion
             {
-                Empleados = new List<Employee>(Empleados),
+                Empleados = new List<Empleado>(Empleados),
                 NumDias = numDiasNuevos,
                 Turnos = new List<string>(Turnos),
                 Satisfaccion = new int[NumEmpleados, numDiasNuevos, NumTurnos],

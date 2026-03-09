@@ -1,6 +1,6 @@
 using System;
 
-namespace DAA_P03.Core.Algorithms
+namespace DAA_P03.Nucleos.Algoritmos
 {
     /// <summary>
     /// Clase abstracta que implementa el patrón Template para algoritmos de Divide y Vencerás binarios.
@@ -100,20 +100,10 @@ namespace DAA_P03.Core.Algorithms
         /// Delega la resolución al método ResolverDivideYVenceras.
         /// </summary>
         /// <param name="instancia">La instancia a resolver.</param>
-        /// <returns>La solución del problema.</returns>
+        /// <returns>La solución completa.</returns>
         public override object Resolver(object instancia)
         {
-            NumOperaciones = 0;
             return ResolverDivideYVenceras(instancia);
-        }
-
-        /// <summary>
-        /// Obtiene información detallada del algoritmo.
-        /// </summary>
-        /// <returns>Información formateada del algoritmo.</returns>
-        public override string ObtenerInfo()
-        {
-            return base.ObtenerInfo() + $"\nNúmero de operaciones: {NumOperaciones}";
         }
     }
 }

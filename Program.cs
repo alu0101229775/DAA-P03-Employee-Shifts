@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using DAA_P03.Core.Algorithms;
-using DAA_P03.Core.Algorithms.Sorting;
-using DAA_P03.Core.Data;
-using DAA_P03.Core.EmployeeScheduling;
+using DAA_P03.Nucleos.Algoritmos;
+using DAA_P03.Nucleos.Algoritmos.Ordenamiento;
+using DAA_P03.Nucleos.Datos;
+using DAA_P03.Nucleos.PlanificacionEmpleados;
 
 namespace DAA_P03
 {
@@ -282,7 +282,7 @@ namespace DAA_P03
         /// <summary>
         /// Ejecuta el algoritmo de planificación con una instancia específica.
         /// </summary>
-        static void EjecutarPlanificacion(InstancePlanning instancia)
+        static void EjecutarPlanificacion(InstanciaPlanificacion instancia)
         {
             if (instancia == null)
             {
@@ -305,7 +305,7 @@ namespace DAA_P03
             var algo = new PlanificacionDivideYVenceras();
 
             var inicio = DateTime.Now;
-            var solucion = algo.ResolverConTiempo(instancia) as SolutionPlanning;
+            var solucion = algo.ResolverConTiempo(instancia) as SolucionPlanificacion;
             var duracion = (DateTime.Now - inicio).TotalMilliseconds;
 
             if (solucion != null)
@@ -333,7 +333,7 @@ namespace DAA_P03
 
             try
             {
-                var instancia = PlanningInstanceManager.CargarDesdeJSON(ruta);
+                var instancia = GestorInstanciasPlanificacion.CargarDesdeJSON(ruta);
                 EjecutarPlanificacion(instancia);
             }
             catch (Exception ex)

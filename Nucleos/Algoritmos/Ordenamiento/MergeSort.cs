@@ -1,7 +1,7 @@
 using System;
-using DAA_P03.Core.Data;
+using DAA_P03.Nucleos.Datos;
 
-namespace DAA_P03.Core.Algorithms.Sorting
+namespace DAA_P03.Nucleos.Algoritmos.Ordenamiento
 {
     /// <summary>
     /// Implementación del algoritmo MergeSort utilizando la plantilla Divide y Vencerás.
