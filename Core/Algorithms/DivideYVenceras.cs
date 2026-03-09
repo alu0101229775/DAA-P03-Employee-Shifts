@@ -82,10 +82,12 @@ namespace DAA_P03.Core.Algorithms
                 // División: dividimos el problema en dos subproblemas
                 object[] subproblemas = Dividir(instancia);
 
+                // ! Y si no es un DyV binario? usar for en ese caso y no en dos subproblemas, sino n subproblemas.
                 // Conquista recursiva: resolvemos cada subproblema
                 object solucion1 = ResolverDivideYVenceras(subproblemas[0]);
                 object solucion2 = ResolverDivideYVenceras(subproblemas[1]);
 
+                // ! n subproblemas en vez de 2
                 // Combinación: unimos las soluciones
                 object solucionFinal = Combinar(solucion1, solucion2);
 
