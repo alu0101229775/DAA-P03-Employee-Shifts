@@ -98,8 +98,11 @@ namespace DAA_P03.Core.EmployeeScheduling
         /// <summary>
         /// Representa la solución en forma de tabla legible.
         /// </summary>
-        public string ObtenerRepresentacionTabla(List<string> empleados, List<string> turnos)
+        public string ObtenerRepresentacionTabla(InstancePlanning instancia)
         {
+            var empleados = instancia.ObtenerNombresEmpleados();
+            var turnos = instancia.Turnos;
+            
             var sb = new StringBuilder();
 
             sb.AppendLine("\n" + new string('=', 100));

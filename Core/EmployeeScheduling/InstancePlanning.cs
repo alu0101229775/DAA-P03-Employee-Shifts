@@ -6,49 +6,76 @@ namespace DAA_P03.Core.EmployeeScheduling
 {
     /// <summary>
     /// Representa una instancia del problema de planificación de empleados.
-    /// Contiene:
-    /// - E: Conjunto de empleados disponibles.
-    /// - D: Número de días a planificar.
-    /// - T: Conjunto de turnos a cubrir en un día.
-    /// - A[e][d][t]: Matriz de satisfacción del empleado e, día d, turno t.
-    /// - B[d][t]: Matriz de cobertura mínima (número mínimo de empleados).
-    /// - C[e]: Array de días de descanso requeridos por empleado.
+    /// Contiene empleados, turnos y matrices de satisfacción/cobertura.
     /// </summary>
     public class InstancePlanning
     {
-        [JsonProperty("empleados")]
-        public List<string> Empleados { get; set; } = new List<string>();
+        /// <summary>
+        /// Lista de empleados con sus propiedades (nombre, días de descanso).
+        /// </summary>
+        [JsonProperty("employees")]
+        public List<Employee> Empleados { get; set; } = new List<Employee>();
 
-        [JsonProperty("dias")]
+        /// <summary>
+        /// Número de días a planificar (horizonte de planificación).
+        /// </summary>
+        [JsonProperty("planningHorizon")]
         public int NumDias { get; set; }
 
-        [JsonProperty("turnos")]
+        /// <summary>
+        /// Lista de turnos disponibles, cada uno con nombre y cobertura mínima.
+        /// </summary>
+        [JsonProperty("shifts")]
         public List<string> Turnos { get; set; } = new List<string>();
 
-        [JsonProperty("satisfaccion")]
+        /// <summary>
+        /// Matriz de satisfacción: A[e][d][t] = satisfacción del empleado e, día d, turno t.
+        /// </summary>
+        [JsonIgnore]
         public int[,,] Satisfaccion { get; set; }
 
-        [JsonProperty("coberturaminima")]
+        /// <summary>
+        /// Matriz de cobertura mínima: B[d][t] = mínimo de empleados para día d, turno t.
+        /// </summary>
+        [JsonIgnore]
         public int[,] CoberturaMínima { get; set; }
 
-        [JsonProperty("diasdescanso")]
+        /// <summary>
+        /// Array de días de descanso: C[e] = días de descanso del empleado e.
+        /// </summary>
+        [JsonIgnore]
         public int[] DiasDescanso { get; set; }
 
         public int NumEmpleados => Empleados?.Count ?? 0;
         public int NumTurnos => Turnos?.Count ?? 0;
 
         /// <summary>
-        /// Representa la instancia en formato texto.
+        /// Obtiene los nombres de los empleados para compatibilidad.
         /// </summary>
-        public override string ToString()
+        public List<string> ObtenerNombresEmpleados()
         {
-            return $"Instancia de Planificación: {NumEmpleados} empleados, " +
-                   $"{NumDias} días, {NumTurnos} turnos/día";
+            var nombres = new List<string>();
+            foreach (var emp in Empleados)
+                nombres.Add(emp.Name);
+            return nombres;
         }
 
         /// <summary>
-        /// Valida que la instancia tenga todos los datos correctos.
+        /// Obtiene los días de descanso de cada empleado.
         /// </summary>
+        public int[] ObtenerDiasDescansoEmpleados()
+        {
+            var diasDescanso = new int[NumEmpleados];
+            for (int i = 0; i < NumEmpleados; i++)
+                diasDescanso[i] = Empleados[i].DaysOff;
+            return diasDescanso;
+        }
+
+        public override string ToString()
+        {
+            return $"Instancia: {NumEmpleados} empleados, {NumDias} días, {NumTurnos} turnos";
+        }
+
         public bool EsValida()
         {
             if (Empleados == null || Empleados.Count == 0) return false;
@@ -59,13 +86,9 @@ namespace DAA_P03.Core.EmployeeScheduling
                 || Satisfaccion.GetLength(2) != NumTurnos) return false;
             if (CoberturaMínima == null || CoberturaMínima.GetLength(0) != NumDias 
                 || CoberturaMínima.GetLength(1) != NumTurnos) return false;
-            if (DiasDescanso == null || DiasDescanso.Length != NumEmpleados) return false;
             return true;
         }
 
-        /// <summary>
-        /// Obtiene una subinstancia para un rango de días (para Divide y Vencerás).
-        /// </summary>
         public InstancePlanning ObtenerSubinstancia(int diaInicio, int diaFin)
         {
             if (diaInicio < 0 || diaFin >= NumDias || diaInicio > diaFin)
@@ -74,12 +97,11 @@ namespace DAA_P03.Core.EmployeeScheduling
             int numDiasNuevos = diaFin - diaInicio + 1;
             var sub = new InstancePlanning
             {
-                Empleados = new List<string>(Empleados),
+                Empleados = new List<Employee>(Empleados),
                 NumDias = numDiasNuevos,
                 Turnos = new List<string>(Turnos),
                 Satisfaccion = new int[NumEmpleados, numDiasNuevos, NumTurnos],
-                CoberturaMínima = new int[numDiasNuevos, NumTurnos],
-                DiasDescanso = (int[])DiasDescanso.Clone()
+                CoberturaMínima = new int[numDiasNuevos, NumTurnos]
             };
 
             for (int e = 0; e < NumEmpleados; e++)

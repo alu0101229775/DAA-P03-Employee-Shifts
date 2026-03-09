@@ -311,7 +311,7 @@ namespace DAA_P03
             if (solucion != null)
             {
                 Console.WriteLine($"✓ Solución encontrada en {algo.TiempoEjecucion}ms");
-                Console.WriteLine(solucion.ObtenerRepresentacionTabla(instancia.Empleados, instancia.Turnos));
+                Console.WriteLine(solucion.ObtenerRepresentacionTabla(instancia));
             }
             else
             {
