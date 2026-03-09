@@ -263,12 +263,9 @@ namespace DAA_P03
                 switch (opcion)
                 {
                     case "1":
-                        EjecutarPlanificacion(PlanningInstanceManager.CrearInstanciaPrueba());
-                        break;
-                    case "2":
                         CargarYEjecutarPlanificacion();
                         break;
-                    case "3":
+                    case "2":
                         ExportarInstanciaPrueba();
                         break;
                     case "0":
@@ -352,20 +349,8 @@ namespace DAA_P03
         static void ExportarInstanciaPrueba()
         {
             Console.Clear();
-            Console.Write("Ingrese la ruta para guardar el JSON: ");
-            string ruta = Console.ReadLine();
-
-            try
-            {
-                var instancia = PlanningInstanceManager.CrearInstanciaPrueba();
-                PlanningInstanceManager.GuardarAJSON(instancia, ruta);
-                Console.WriteLine($"✓ Instancia guardada en {ruta}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-            }
-
+            Console.WriteLine("Para exportar una instancia, primero cargala desde un archivo JSON.");
+            Console.WriteLine("Usa la opción anterior para cargar y ejecutar una instancia.");
             Console.ReadKey();
         }
 
