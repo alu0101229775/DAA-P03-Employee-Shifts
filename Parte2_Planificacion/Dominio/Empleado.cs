@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace DAA_P03.Nucleos.PlanificacionEmpleados
+namespace DAA_P03.Parte2_Planificacion.Dominio
 {
     /// <summary>
     /// Representa un empleado en el problema de planificación.

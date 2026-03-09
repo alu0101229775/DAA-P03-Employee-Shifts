@@ -1,14 +1,15 @@
 using System;
-using DAA_P03.Nucleos.Datos;
+using DAA_P03.Parte1_Ordenamiento.Base;
+using DAA_P03.Parte1_Ordenamiento.Modelo;
 
-namespace DAA_P03.Nucleos.Algoritmos.Ordenamiento
+namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
 {
     /// <summary>
     /// Implementación del algoritmo MergeSort utilizando la plantilla Divide y Vencerás.
     /// MergeSort es un algoritmo de ordenamiento estable bastante eficiente con complejidad O(n log n).
-    /// Implementa todos los métodos abstractos definidos en DivideYVenceras.
+    /// Implementa todos los métodos abstractos definidos en AlgoritmoDyV.
     /// </summary>
-    public class MergeSort : DivideYVenceras
+    public class MergeSort : AlgoritmoDyV
     {
         /// <summary>
         /// Umbral para cambiar a ordenamiento por región pequeña.
@@ -41,12 +42,12 @@ namespace DAA_P03.Nucleos.Algoritmos.Ordenamiento
         /// Determina si el array es lo suficientemente pequeño para ser ordenado directamente.
         /// En MergeSort, es pequeño cuando tiene 1 o 0 elementos.
         /// </summary>
-        /// <param name="instancia">La instancia a evaluar (InstanceSorting).</param>
+        /// <param name="instancia">La instancia a evaluar (InstanciaOrdenamiento).</param>
         /// <returns>true si el tamaño es <= UMBRAL_PEQUENIO.</returns>
         protected override bool EsPequenio(object instancia)
         {
-            InstanceSorting instance = instancia as InstanceSorting ??
-                throw new ArgumentException("La instancia debe ser de tipo InstanceSorting.");
+            InstanciaOrdenamiento instance = instancia as InstanciaOrdenamiento ??
+                throw new ArgumentException("La instancia debe ser de tipo InstanciaOrdenamiento.");
             return instance.Tamaño <= UMBRAL_PEQUENIO;
         }
 
@@ -54,26 +55,26 @@ namespace DAA_P03.Nucleos.Algoritmos.Ordenamiento
         /// Resuelve el problema cuando el array es pequeño.
         /// Para un array de 0 o 1 elementos, ya está "ordenado".
         /// </summary>
-        /// <param name="instancia">El array pequeño (InstanceSorting).</param>
+        /// <param name="instancia">El array pequeño (InstanciaOrdenamiento).</param>
         /// <returns>Una solución con el array ya ordenado.</returns>
         protected override object ResolverPequenio(object instancia)
         {
-            InstanceSorting instance = instancia as InstanceSorting ??
-                throw new ArgumentException("La instancia debe ser de tipo InstanceSorting.");
+            InstanciaOrdenamiento instance = instancia as InstanciaOrdenamiento ??
+                throw new ArgumentException("La instancia debe ser de tipo InstanciaOrdenamiento.");
 
             NumOperaciones++;
-            return new SolutionSorting(instance.Numeros, _comparaciones, _movimientos);
+            return new SolucionOrdenamiento(instance.Numeros, _comparaciones, _movimientos);
         }
 
         /// <summary>
         /// Divide el array en dos mitades.
         /// </summary>
-        /// <param name="instancia">El array a dividir (InstanceSorting).</param>
+        /// <param name="instancia">El array a dividir (InstanciaOrdenamiento).</param>
         /// <returns>Array con dos SubInstances (mitad izquierda y derecha).</returns>
         protected override object[] Dividir(object instancia)
         {
-            InstanceSorting instance = instancia as InstanceSorting ??
-                throw new ArgumentException("La instancia debe ser de tipo InstanceSorting.");
+            InstanciaOrdenamiento instance = instancia as InstanciaOrdenamiento ??
+                throw new ArgumentException("La instancia debe ser de tipo InstanciaOrdenamiento.");
 
             int mitad = instance.Tamaño / 2;
             int[] izquierda = new int[mitad];
@@ -86,8 +87,8 @@ namespace DAA_P03.Nucleos.Algoritmos.Ordenamiento
 
             return new object[]
             {
-                new InstanceSorting(izquierda),
-                new InstanceSorting(derecha)
+                new InstanciaOrdenamiento(izquierda),
+                new InstanciaOrdenamiento(derecha)
             };
         }
 
@@ -95,15 +96,15 @@ namespace DAA_P03.Nucleos.Algoritmos.Ordenamiento
         /// Combina dos soluciones ordenadas en una única solución ordenada.
         /// Realiza el proceso de mezcla típico de MergeSort.
         /// </summary>
-        /// <param name="solucion1">Primera mitad ordenada (SolutionSorting).</param>
-        /// <param name="solucion2">Segunda mitad ordenada (SolutionSorting).</param>
+        /// <param name="solucion1">Primera mitad ordenada (SolucionOrdenamiento).</param>
+        /// <param name="solucion2">Segunda mitad ordenada (SolucionOrdenamiento).</param>
         /// <returns>Una nueva solución con los elementos combinados y ordenados.</returns>
         protected override object Combinar(object solucion1, object solucion2)
         {
-            SolutionSorting sol1 = solucion1 as SolutionSorting ??
-                throw new ArgumentException("Solución 1 debe ser de tipo SolutionSorting.");
-            SolutionSorting sol2 = solucion2 as SolutionSorting ??
-                throw new ArgumentException("Solución 2 debe ser de tipo SolutionSorting.");
+            SolucionOrdenamiento sol1 = solucion1 as SolucionOrdenamiento ??
+                throw new ArgumentException("Solución 1 debe ser de tipo SolucionOrdenamiento.");
+            SolucionOrdenamiento sol2 = solucion2 as SolucionOrdenamiento ??
+                throw new ArgumentException("Solución 2 debe ser de tipo SolucionOrdenamiento.");
 
             int[] arr1 = sol1.NumerosOrdenados;
             int[] arr2 = sol2.NumerosOrdenados;
@@ -141,7 +142,7 @@ namespace DAA_P03.Nucleos.Algoritmos.Ordenamiento
 
             NumOperaciones++;
 
-            return new SolutionSorting(resultado, _comparaciones, _movimientos);
+            return new SolucionOrdenamiento(resultado, _comparaciones, _movimientos);
         }
 
         /// <summary>

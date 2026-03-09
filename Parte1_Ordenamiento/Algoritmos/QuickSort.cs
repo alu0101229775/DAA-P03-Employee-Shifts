@@ -1,14 +1,15 @@
 using System;
-using DAA_P03.Nucleos.Datos;
+using DAA_P03.Parte1_Ordenamiento.Base;
+using DAA_P03.Parte1_Ordenamiento.Modelo;
 
-namespace DAA_P03.Nucleos.Algoritmos.Ordenamiento
+namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
 {
     /// <summary>
     /// Implementación del algoritmo QuickSort utilizando la plantilla Divide y Vencerás.
     /// QuickSort es un algoritmo de ordenamiento rápido basado en la partición del array.
-    /// Implementa todos los métodos abstractos definidos en DivideYVenceras.
+    /// Implementa todos los métodos abstractos definidos en AlgoritmoDyV.
     /// </summary>
-    public class QuickSort : DivideYVenceras
+    public class QuickSort : AlgoritmoDyV
     {
         /// <summary>
         /// Umbral para cambiar a ordenamiento por inserción en casos pequeños.
@@ -41,12 +42,12 @@ namespace DAA_P03.Nucleos.Algoritmos.Ordenamiento
         /// Determina si el array es lo suficientemente pequeño para ser ordenado directamente.
         /// En QuickSort, es pequeño cuando tiene 1 o 0 elementos.
         /// </summary>
-        /// <param name="instancia">La instancia a evaluar (InstanceSorting).</param>
+        /// <param name="instancia">La instancia a evaluar (InstanciaOrdenamiento).</param>
         /// <returns>true si el tamaño es <= UMBRAL_PEQUENIO.</returns>
         protected override bool EsPequenio(object instancia)
         {
-            InstanceSorting instance = instancia as InstanceSorting ??
-                throw new ArgumentException("La instancia debe ser de tipo InstanceSorting.");
+            InstanciaOrdenamiento instance = instancia as InstanciaOrdenamiento ??
+                throw new ArgumentException("La instancia debe ser de tipo InstanciaOrdenamiento.");
             return instance.Tamaño <= UMBRAL_PEQUENIO;
         }
 
@@ -54,15 +55,15 @@ namespace DAA_P03.Nucleos.Algoritmos.Ordenamiento
         /// Resuelve el problema cuando el array es pequeño.
         /// Para un array de 0 o 1 elementos, ya está "ordenado".
         /// </summary>
-        /// <param name="instancia">El array pequeño (InstanceSorting).</param>
+        /// <param name="instancia">El array pequeño (InstanciaOrdenamiento).</param>
         /// <returns>Una solución con el array ya ordenado.</returns>
         protected override object ResolverPequenio(object instancia)
         {
-            InstanceSorting instance = instancia as InstanceSorting ??
-                throw new ArgumentException("La instancia debe ser de tipo InstanceSorting.");
+            InstanciaOrdenamiento instance = instancia as InstanciaOrdenamiento ??
+                throw new ArgumentException("La instancia debe ser de tipo InstanciaOrdenamiento.");
 
             NumOperaciones++;
-            return new SolutionSorting(instance.Numeros, _comparaciones, _intercambios);
+            return new SolucionOrdenamiento(instance.Numeros, _comparaciones, _intercambios);
         }
 
         /// <summary>
@@ -70,12 +71,12 @@ namespace DAA_P03.Nucleos.Algoritmos.Ordenamiento
         /// Reorganiza el array de forma que los elementos menores al pivote queden a la izquierda
         /// y los mayores a la derecha, usando intercambios (swaps).
         /// </summary>
-        /// <param name="instancia">El array a particionar (InstanceSorting).</param>
+        /// <param name="instancia">El array a particionar (InstanciaOrdenamiento).</param>
         /// <returns>Array con dos instancias (partición izquierda e índice de partición).</returns>
         protected override object[] Dividir(object instancia)
         {
-            InstanceSorting instance = instancia as InstanceSorting ??
-                throw new ArgumentException("La instancia debe ser de tipo InstanceSorting.");
+            InstanciaOrdenamiento instance = instancia as InstanciaOrdenamiento ??
+                throw new ArgumentException("La instancia debe ser de tipo InstanciaOrdenamiento.");
 
             int[] numeros = (int[])instance.Numeros.Clone();
             
@@ -93,8 +94,8 @@ namespace DAA_P03.Nucleos.Algoritmos.Ordenamiento
 
             return new object[]
             {
-                new InstanceSorting(izquierda),
-                new InstanceSorting(derecha)
+                new InstanciaOrdenamiento(izquierda),
+                new InstanciaOrdenamiento(derecha)
             };
         }
 
@@ -145,15 +146,15 @@ namespace DAA_P03.Nucleos.Algoritmos.Ordenamiento
         /// Combina dos soluciones ordenadas.
         /// En QuickSort, simplemente concatenamos las particiones ordenadas.
         /// </summary>
-        /// <param name="solucion1">Primera partición ordenada (SolutionSorting).</param>
-        /// <param name="solucion2">Segunda partición ordenada (SolutionSorting).</param>
+        /// <param name="solucion1">Primera partición ordenada (SolucionOrdenamiento).</param>
+        /// <param name="solucion2">Segunda partición ordenada (SolucionOrdenamiento).</param>
         /// <returns>Una nueva solución con los elementos combinados y ordenados.</returns>
         protected override object Combinar(object solucion1, object solucion2)
         {
-            SolutionSorting sol1 = solucion1 as SolutionSorting ??
-                throw new ArgumentException("Solución 1 debe ser de tipo SolutionSorting.");
-            SolutionSorting sol2 = solucion2 as SolutionSorting ??
-                throw new ArgumentException("Solución 2 debe ser de tipo SolutionSorting.");
+            SolucionOrdenamiento sol1 = solucion1 as SolucionOrdenamiento ??
+                throw new ArgumentException("Solución 1 debe ser de tipo SolucionOrdenamiento.");
+            SolucionOrdenamiento sol2 = solucion2 as SolucionOrdenamiento ??
+                throw new ArgumentException("Solución 2 debe ser de tipo SolucionOrdenamiento.");
 
             int[] arr1 = sol1.NumerosOrdenados;
             int[] arr2 = sol2.NumerosOrdenados;
@@ -170,7 +171,7 @@ namespace DAA_P03.Nucleos.Algoritmos.Ordenamiento
 
             NumOperaciones++;
 
-            return new SolutionSorting(resultado, _comparaciones, _intercambios);
+            return new SolucionOrdenamiento(resultado, _comparaciones, _intercambios);
         }
 
         /// <summary>

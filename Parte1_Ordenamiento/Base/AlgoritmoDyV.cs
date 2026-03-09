@@ -1,6 +1,6 @@
 using System;
 
-namespace DAA_P03.Nucleos.Algoritmos
+namespace DAA_P03.Parte1_Ordenamiento.Base
 {
     /// <summary>
     /// Clase abstracta que implementa el patrón Template para algoritmos de Divide y Vencerás binarios.
@@ -20,12 +20,12 @@ namespace DAA_P03.Nucleos.Algoritmos
     ///    }
     /// }
     /// </summary>
-    public abstract class DivideYVenceras : Algoritmo
+    public abstract class AlgoritmoDyV : Algoritmo
     {
         /// <summary>
         /// Constructor que inicializa el algoritmo Template de Divide y Vencerás.
         /// </summary>
-        protected DivideYVenceras()
+        protected AlgoritmoDyV()
         {
             Nombre = "Divide y Vencerás (Template)";
             Descripcion = "Patrón plantilla para algoritmos de Divide y Vencerás binarios";

@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using DAA_P03.Parte2_Planificacion.Dominio;
 
-namespace DAA_P03.Nucleos.PlanificacionEmpleados
+namespace DAA_P03.Parte2_Planificacion.Modelo
 {
     /// <summary>
     /// Representa una instancia del problema de planificación de empleados.

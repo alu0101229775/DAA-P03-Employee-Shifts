@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace DAA_P03.Nucleos.Algoritmos
+namespace DAA_P03.Parte1_Ordenamiento.Base
 {
     /// <summary>
     /// Clase base abstracta que representa un algoritmo genérico.

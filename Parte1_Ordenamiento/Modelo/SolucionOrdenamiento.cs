@@ -1,13 +1,13 @@
 using System;
 using System.Linq;
 
-namespace DAA_P03.Nucleos.Datos
+namespace DAA_P03.Parte1_Ordenamiento.Modelo
 {
     /// <summary>
     /// Representa la solución a un problema de ordenamiento.
     /// Contiene el array ordenado y metadatos adicionales.
     /// </summary>
-    public class SolutionSorting
+    public class SolucionOrdenamiento
     {
         /// <summary>
         /// El array ordenado.
@@ -49,7 +49,7 @@ namespace DAA_P03.Nucleos.Datos
         /// <param name="numerosOrdenados">Array ordenado.</param>
         /// <param name="comparaciones">Número de comparaciones realizadas.</param>
         /// <param name="intercambios">Número de intercambios realizados.</param>
-        public SolutionSorting(int[] numerosOrdenados, long comparaciones = 0, long intercambios = 0)
+        public SolucionOrdenamiento(int[] numerosOrdenados, long comparaciones = 0, long intercambios = 0)
         {
             if (numerosOrdenados == null)
                 throw new ArgumentNullException(nameof(numerosOrdenados), "El array no puede ser nulo.");

@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using DAA_P03.Nucleos.Algoritmos;
-using DAA_P03.Nucleos.Algoritmos.Ordenamiento;
-using DAA_P03.Nucleos.Datos;
-using DAA_P03.Nucleos.PlanificacionEmpleados;
+using DAA_P03.Parte1_Ordenamiento.Base;
+using DAA_P03.Parte1_Ordenamiento.Algoritmos;
+using DAA_P03.Parte1_Ordenamiento.Modelo;
+using DAA_P03.Parte2_Planificacion.Modelo;
+using DAA_P03.Parte2_Planificacion.Algoritmos;
+using DAA_P03.Parte2_Planificacion.Servicios;
 
 namespace DAA_P03
 {
@@ -147,7 +149,7 @@ namespace DAA_P03
                 for (int rep = 0; rep < repeticiones; rep++)
                 {
                     // Crear la misma instancia para ambos algoritmos
-                    var instancia = new InstanceSorting(tamaño, tamaño + rep);
+                    var instancia = new InstanciaOrdenamiento(tamaño, tamaño + rep);
 
                     // Ejecutar MergeSort
                     mergeSort.ResolverConTiempo(instancia.ObtenerCopia());
@@ -201,7 +203,7 @@ namespace DAA_P03
 
             Console.WriteLine("\nGenerando instancia...");
 
-            var instancia = new InstanceSorting(tamaño, 42);
+            var instancia = new InstanciaOrdenamiento(tamaño, 42);
             Algoritmo algo = algoritmo == "1" ? new MergeSort() : new QuickSort();
 
             Console.WriteLine($"\nInstancia (Tamaño: {instancia.Tamaño}):");
@@ -212,7 +214,7 @@ namespace DAA_P03
             object resultado = algo.ResolverConTiempo(instancia);
             var duracion = DateTime.Now - inicio;
 
-            if (resultado is SolutionSorting solucion)
+            if (resultado is SolucionOrdenamiento solucion)
             {
                 Console.WriteLine($"\nSolución obtenida en {algo.TiempoEjecucion}ms:");
                 Console.WriteLine(solucion.ToString());

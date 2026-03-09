@@ -1,13 +1,13 @@
 using System;
 using System.Linq;
 
-namespace DAA_P03.Nucleos.Datos
+namespace DAA_P03.Parte1_Ordenamiento.Modelo
 {
     /// <summary>
     /// Representa una instancia de un problema de ordenamiento.
     /// Contiene un array de números enteros a ser ordenados.
     /// </summary>
-    public class InstanceSorting
+    public class InstanciaOrdenamiento
     {
         /// <summary>
         /// El array de números a ordenar.
@@ -23,7 +23,7 @@ namespace DAA_P03.Nucleos.Datos
         /// Constructor que inicializa la instancia con un array específico.
         /// </summary>
         /// <param name="numeros">Array de números a ordenar.</param>
-        public InstanceSorting(int[] numeros)
+        public InstanciaOrdenamiento(int[] numeros)
         {
             if (numeros == null)
                 throw new ArgumentNullException(nameof(numeros), "El array no puede ser nulo.");
@@ -35,7 +35,7 @@ namespace DAA_P03.Nucleos.Datos
         /// </summary>
         /// <param name="tamaño">Número de elementos a generar.</param>
         /// <param name="seed">Semilla para la generación aleatoria (opcional).</param>
-        public InstanceSorting(int tamaño, int seed = 0)
+        public InstanciaOrdenamiento(int tamaño, int seed = 0)
         {
             if (tamaño <= 0)
                 throw new ArgumentException("El tamaño debe ser positivo.", nameof(tamaño));
@@ -52,9 +52,9 @@ namespace DAA_P03.Nucleos.Datos
         /// Obtiene una copia de la instancia.
         /// </summary>
         /// <returns>Una nueva instancia con los mismos datos.</returns>
-        public InstanceSorting ObtenerCopia()
+        public InstanciaOrdenamiento ObtenerCopia()
         {
-            return new InstanceSorting((int[])Numeros.Clone());
+            return new InstanciaOrdenamiento((int[])Numeros.Clone());
         }
 
         /// <summary>

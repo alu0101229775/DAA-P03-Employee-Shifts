@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DAA_P03.Nucleos.PlanificacionEmpleados
+namespace DAA_P03.Parte2_Planificacion.Modelo
 {
     /// <summary>
     /// Representa la solución al problema de planificación de empleados.

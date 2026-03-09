@@ -3,8 +3,10 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using DAA_P03.Parte2_Planificacion.Modelo;
+using DAA_P03.Parte2_Planificacion.Dominio;
 
-namespace DAA_P03.Nucleos.PlanificacionEmpleados
+namespace DAA_P03.Parte2_Planificacion.Servicios
 {
     /// <summary>
     /// Gestor para cargar y deserializar instancias de planificación desde archivos JSON.

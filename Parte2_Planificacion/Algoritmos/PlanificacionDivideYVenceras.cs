@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DAA_P03.Parte1_Ordenamiento.Base;
+using DAA_P03.Parte2_Planificacion.Modelo;
 
-namespace DAA_P03.Nucleos.PlanificacionEmpleados
+namespace DAA_P03.Parte2_Planificacion.Algoritmos
 {
     /// <summary>
     /// Algoritmo de Divide y Vencerás para planificación de empleados.
@@ -12,7 +14,7 @@ namespace DAA_P03.Nucleos.PlanificacionEmpleados
     /// - Conquista: Resuelve recursivamente cada mitad
     /// - Combinación: Mezcla las soluciones
     /// </summary>
-    public class PlanificacionDivideYVenceras : Nucleos.Algoritmos.DivideYVenceras
+    public class PlanificacionDivideYVenceras : AlgoritmoDyV
     {
         public PlanificacionDivideYVenceras()
         {
