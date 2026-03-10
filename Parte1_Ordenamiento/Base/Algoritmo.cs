@@ -10,24 +10,8 @@ namespace DAA_P03.Parte1_Ordenamiento.Base
     /// </summary>
     public abstract class Algoritmo
     {
-        /// <summary>
-        /// Nombre descriptivo del algoritmo.
-        /// </summary>
         public string Nombre { get; protected set; }
-
-        /// <summary>
-        /// Descripción detallada del algoritmo.
-        /// </summary>
-        public string Descripcion { get; protected set; }
-
-        /// <summary>
-        /// Tiempo de ejecución en milisegundos de la última ejecución.
-        /// </summary>
         public long TiempoEjecucion { get; protected set; }
-
-        /// <summary>
-        /// Contador de operaciones realizadas (útil para análisis).
-        /// </summary>
         public long NumOperaciones { get; protected set; }
 
         /// <summary>
@@ -67,7 +51,6 @@ namespace DAA_P03.Parte1_Ordenamiento.Base
         public virtual string ObtenerInfo()
         {
             return $"Algoritmo: {Nombre}\n" +
-                   $"Descripción: {Descripcion}\n" +
                    $"Tiempo de ejecución: {TiempoEjecucion}ms\n" +
                    $"Operaciones: {NumOperaciones}";
         }

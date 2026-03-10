@@ -6,19 +6,6 @@ namespace DAA_P03.Parte1_Ordenamiento.Base
     /// Clase abstracta que implementa el patrón Template para algoritmos de Divide y Vencerás binarios.
     /// Define el esqueleto del algoritmo D&C con métodos abstractos que deben ser implementados
     /// por las clases derivadas para problemas específicos.
-    /// 
-    /// El pseudocódigo base es:
-    /// Solve(Problema p, int tamaño) {
-    ///    if (Small(p))
-    ///       return SolveSmall(p)
-    ///    else {
-    ///       Problema m[] = Divide(p, tamaño)
-    ///       Solucion S1 = Solve(m[0], tamaño/2)
-    ///       Solucion S2 = Solve(m[1], tamaño/2)
-    ///       Solucion S = Combine(S1, S2)
-    ///       return S
-    ///    }
-    /// }
     /// </summary>
     public abstract class AlgoritmoDyV : Algoritmo
     {
@@ -28,7 +15,6 @@ namespace DAA_P03.Parte1_Ordenamiento.Base
         protected AlgoritmoDyV()
         {
             Nombre = "Divide y Vencerás (Template)";
-            Descripcion = "Patrón plantilla para algoritmos de Divide y Vencerás binarios";
         }
 
         /// <summary>

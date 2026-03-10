@@ -9,19 +9,8 @@ namespace DAA_P03.Parte1_Ordenamiento.Modelo
     /// </summary>
     public class SolucionOrdenamiento
     {
-        /// <summary>
-        /// El array ordenado.
-        /// </summary>
         public int[] NumerosOrdenados { get; set; }
-
-        /// <summary>
-        /// Número de comparaciones realizadas durante el ordenamiento.
-        /// </summary>
         public long NumComparaciones { get; set; }
-
-        /// <summary>
-        /// Número de intercambios realizados durante el ordenamiento.
-        /// </summary>
         public long NumIntercambios { get; set; }
 
         /// <summary>

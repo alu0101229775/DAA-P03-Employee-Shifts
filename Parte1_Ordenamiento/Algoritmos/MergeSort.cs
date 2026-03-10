@@ -11,14 +11,7 @@ namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
     /// </summary>
     public class MergeSort : AlgoritmoDyV
     {
-        /// <summary>
-        /// Número de comparaciones realizadas.
-        /// </summary>
         private long _comparaciones;
-
-        /// <summary>
-        /// Número de movimientos de elementos.
-        /// </summary>
         private long _movimientos;
 
         /// <summary>
@@ -27,8 +20,6 @@ namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
         public MergeSort()
         {
             Nombre = "MergeSort";
-            Descripcion = "Algoritmo de ordenamiento estable basado en Divide y Vencerás. " +
-                         "Divide el array en mitades, ordena recursivamente cada mitad y luego mezcla ordenadamente.";
             _comparaciones = 0;
             _movimientos = 0;
         }

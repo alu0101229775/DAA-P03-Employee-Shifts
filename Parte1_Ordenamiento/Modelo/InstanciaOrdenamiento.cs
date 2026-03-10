@@ -10,14 +10,7 @@ namespace DAA_P03.Parte1_Ordenamiento.Modelo
     /// </summary>
     public class InstanciaOrdenamiento : Instancia
     {
-        /// <summary>
-        /// El array de números a ordenar.
-        /// </summary>
         public int[] Numeros { get; set; }
-
-        /// <summary>
-        /// Tamaño del array.
-        /// </summary>
         public override int Tamaño => Numeros?.Length ?? 0;
 
         /// <summary>

@@ -11,14 +11,7 @@ namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
     /// </summary>
     public class QuickSort : AlgoritmoDyV
     {
-        /// <summary>
-        /// Número de comparaciones realizadas.
-        /// </summary>
         private long _comparaciones;
-
-        /// <summary>
-        /// Número de intercambios realizados.
-        /// </summary>
         private long _intercambios;
 
         /// <summary>
@@ -27,8 +20,6 @@ namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
         public QuickSort()
         {
             Nombre = "QuickSort";
-            Descripcion = "Algoritmo de ordenamiento basado en Divide y Vencerás con particionamiento in-place. " +
-                         "Selecciona un pivote, particiona el array y ordena recursivamente cada parte.";
             _comparaciones = 0;
             _intercambios = 0;
         }
