@@ -143,54 +143,38 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
         public string ObtenerRepresentacionTabla(InstanciaPlanificacion instancia)
         {
             var empleados = instancia.ObtenerNombresEmpleados();
-            var turnos = instancia.Turnos;
             var sb = new StringBuilder();
+
+            // Ancho de columna dinámico según número de turnos y longitud de nombres
+            int maxNombreTurno = instancia.Turnos.Count > 0 ? instancia.Turnos.Max(s => s.Length) : 2;
+            // Celda de asignación: todos muestran nombre o "*", separados por " - "
+            int anchoCeldaAsig = maxNombreTurno * NumTurnos + 3 * (NumTurnos - 1);
+            // Celda de cobertura: "NN/NN" por turno, separados por " - "
+            int anchoCeldaCob = 5 * NumTurnos + 3 * (NumTurnos - 1);
+            int anchoCelda = Math.Max(Math.Max(anchoCeldaAsig, anchoCeldaCob),
+                                      $"Day {NumDias - 1} |".Length) + 2;
+            int anchoEtiqueta = 28;
 
             // ========== TABLA PRINCIPAL: EMPLEADOS Y ASIGNACIONES ==========
             sb.AppendLine();
-            sb.AppendLine("Employee" + String.Format("{0," + (NumDias * 14 + 30) + "}", "").Replace(" ", " ").TrimStart());
-            
-            // Encabezado de días
-            sb.Append("Employee".PadRight(28));
+            sb.Append("Empleado".PadRight(anchoEtiqueta));
             for (int d = 0; d < NumDias; d++)
-            {
-                sb.Append($"Day {d} |".PadRight(14));
-            }
+                sb.Append($"Day {d} |".PadRight(anchoCelda));
             sb.AppendLine();
 
-            // Filas de empleados
             for (int e = 0; e < NumEmpleados; e++)
             {
-                string nombreEmpleado = (e < empleados.Count ? empleados[e] : $"E{e}") + $" ({e})";
-                sb.Append(nombreEmpleado.PadRight(28));
-                
-                // Para cada día, mostrar asignación
+                string etiqueta = (e < empleados.Count ? empleados[e] : $"E{e}") + $" ({e})";
+                sb.Append(etiqueta.PadRight(anchoEtiqueta));
+
                 for (int d = 0; d < NumDias; d++)
                 {
-                    string asignacion = "";
-                    
-                    // Buscar qué turno tiene el empleado en este día
-                    int turnoDelEmpleado = -1;
+                    // Mostrar TODOS los turnos asignados al empleado ese día
+                    var partes = new string[NumTurnos];
                     for (int t = 0; t < NumTurnos; t++)
-                    {
-                        if (Plan[d][t].Contains(e))
-                        {
-                            turnoDelEmpleado = t;
-                            break;
-                        }
-                    }
+                        partes[t] = Plan[d][t].Contains(e) ? instancia.Turnos[t] : "*";
 
-                    // Armar representación del día
-                    for (int t = 0; t < NumTurnos; t++)
-                    {
-                        if (t > 0) asignacion += " - ";
-                        if (t == turnoDelEmpleado)
-                            asignacion += $"T{t}";
-                        else
-                            asignacion += "*";
-                    }
-
-                    sb.Append(asignacion.PadRight(14));
+                    sb.Append((string.Join(" - ", partes) + " |").PadRight(anchoCelda));
                 }
                 sb.AppendLine();
             }
@@ -199,20 +183,13 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
             sb.AppendLine();
             sb.AppendLine("=========== INDICATORS");
             sb.AppendLine();
-            sb.Append("Shifts not covered".PadRight(28));
-            
+            sb.Append("Shifts not covered".PadRight(anchoEtiqueta));
             for (int d = 0; d < NumDias; d++)
             {
-                string noCubiertos = "";
+                var partes = new string[NumTurnos];
                 for (int t = 0; t < NumTurnos; t++)
-                {
-                    if (t > 0) noCubiertos += " - ";
-                    int asignados = Plan[d][t].Count;
-                    int requerido = instancia.CoberturaMínima[d, t];
-                    int deficit = Math.Max(0, requerido - asignados);
-                    noCubiertos += deficit;
-                }
-                sb.Append(noCubiertos.PadRight(14));
+                    partes[t] = Math.Max(0, instancia.CoberturaMínima[d, t] - Plan[d][t].Count).ToString();
+                sb.Append((string.Join(" - ", partes) + " |").PadRight(anchoCelda));
             }
             sb.AppendLine();
 
@@ -220,19 +197,13 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
             sb.AppendLine();
             sb.AppendLine("=========== REQUIRED EMPLOYEES");
             sb.AppendLine();
-            sb.Append("Day Available/Required".PadRight(28));
-            
+            sb.Append("Day Available/Required".PadRight(anchoEtiqueta));
             for (int d = 0; d < NumDias; d++)
             {
-                string cobertura = "";
+                var partes = new string[NumTurnos];
                 for (int t = 0; t < NumTurnos; t++)
-                {
-                    if (t > 0) cobertura += " - ";
-                    int asignados = Plan[d][t].Count;
-                    int requerido = instancia.CoberturaMínima[d, t];
-                    cobertura += $"{asignados}/{requerido}";
-                }
-                sb.Append(cobertura.PadRight(14));
+                    partes[t] = $"{Plan[d][t].Count}/{instancia.CoberturaMínima[d, t]}";
+                sb.Append((string.Join(" - ", partes) + " |").PadRight(anchoCelda));
             }
             sb.AppendLine();
 
@@ -243,16 +214,8 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
 
             // ========== INFORMACIÓN ADICIONAL ==========
             sb.AppendLine();
-            sb.AppendLine("=== INFORMACIÓN DE LA SOLUCIÓN ===");
-            sb.AppendLine($"Días planificados: {NumDias}");
-            sb.AppendLine($"Turnos por día: {NumTurnos}");
-            sb.AppendLine($"Empleados: {NumEmpleados}");
-            sb.AppendLine($"Satisfacción Total: {SatisfaccionTotal:F2}");
-            sb.AppendLine($"Turnos Cubiertos: {TurnosCubiertos}");
-            sb.AppendLine($"Función Objetivo: {FuncionObjetivo:F2}");
-            sb.AppendLine($"Válida: {(EsValida ? "Sí" : "No")}");
-            
-            sb.AppendLine();
+            sb.AppendLine(ObtenerInfo());
+
             sb.AppendLine("=== DÍAS DE DESCANSO POR EMPLEADO ===");
             for (int e = 0; e < NumEmpleados; e++)
             {

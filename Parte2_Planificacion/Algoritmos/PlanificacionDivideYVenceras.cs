@@ -57,16 +57,18 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
             // Voraz mejorado: considera satisfacción Y restricciones de descanso
             for (int d = 0; d < inst.NumDias; d++)
             {
+                var empleadosQueTrabajanHoy = new HashSet<int>();
+
                 for (int t = 0; t < inst.NumTurnos; t++)
                 {
                     int coberturaMínima = inst.CoberturaMínima[d, t];
 
-                    // Obtener empleados válidos (respetan descanso) ordenados por satisfacción
+                    // Obtener empleados válidos: no asignados hoy y con días de descanso disponibles
                     var empleadosValidos = new List<(int id, double sat, int diasDescansoRestantes)>();
                     for (int e = 0; e < inst.NumEmpleados; e++)
                     {
+                        if (empleadosQueTrabajanHoy.Contains(e)) continue;
                         int diasDescansoRestantes = diasDescansoEmpleados[e];
-                        // Filtrar: empleado ya tiene días de descanso suficientes O puede trabajar este turno
                         if (diasDescansoRestantes > 0 || diasDescansoEmpleados[e] >= inst.Empleados[e].DiasDescanso)
                         {
                             empleadosValidos.Add((e, inst.Satisfaccion[e, d, t], diasDescansoRestantes));
@@ -83,9 +85,11 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
                     int asignados = 0;
                     for (int i = 0; i < empleadosValidos.Count && asignados < coberturaMínima; i++)
                     {
-                        sol.AsignarEmpleado(d, t, empleadosValidos[i].id);
+                        int empId = empleadosValidos[i].id;
+                        sol.AsignarEmpleado(d, t, empId);
                         satisfaccionTotal += empleadosValidos[i].sat;
-                        diasDescansoEmpleados[empleadosValidos[i].id]--; // Reduce días de descanso pendientes
+                        diasDescansoEmpleados[empId]--;
+                        empleadosQueTrabajanHoy.Add(empId);
                         asignados++;
                     }
 
@@ -183,6 +187,21 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
                                     {
                                         int emp2 = sol.Plan[d2][t2][j];
                                         if (emp1 == emp2) continue;
+
+                                        // Para días distintos: verificar que el swap no crea
+                                        // multi-turno en el mismo día
+                                        if (d1 != d2)
+                                        {
+                                            bool emp2EnDia1 = false;
+                                            for (int tt = 0; tt < sol.NumTurnos && !emp2EnDia1; tt++)
+                                                if (sol.Plan[d1][tt].Contains(emp2)) emp2EnDia1 = true;
+                                            if (emp2EnDia1) continue;
+
+                                            bool emp1EnDia2 = false;
+                                            for (int tt = 0; tt < sol.NumTurnos && !emp1EnDia2; tt++)
+                                                if (sol.Plan[d2][tt].Contains(emp1)) emp1EnDia2 = true;
+                                            if (emp1EnDia2) continue;
+                                        }
 
                                         // Calcular ganancia de intercambiar emp1 y emp2
                                         double mejora_potencial = CalcularMejoraIntercambio(
