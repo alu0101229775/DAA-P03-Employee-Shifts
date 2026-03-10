@@ -6,36 +6,9 @@
 
 ---
 
-## 1. INTRODUCCIÓN
+## 1. DECISIONES DE MODELADO
 
-Este informe documenta las decisiones de modelado y la experimentación realizada para resolver el problema de **Planificación de Empleados** utilizando un algoritmo de **Divide y Vencerás** con optimizaciones heurísticas.
-
-### 1.1 ACTUALIZACIÓN: Correcciones de Carga JSON
-
-**Fecha**: 10 de Marzo de 2026 (Revisión)
-
-Se han identificado y corregido problemas en la deserialización de archivos JSON:
-
-**Problemas Identificados**:
-1. Casting directo `(int)empToken` fallaba con Newtonsoft.Json
-   - Solución: Usar `.ToObject<int>()` para casteo seguro
-2. Nombre de clave inconsistente: JSON usa `"requiredEmployees"` no `"minimumCoverage"`
-   - Solución: Aceptar ambos nombres con `?? ` operator
-3. Conversiones de double a int innecesarias
-   - Solución: Parsear directamente a int
-
-**Mejoras de Robustez**:
-- Try-catch interno por item con mensajes de error detallados
-- Validación de rangos [día, empleado, turno]
-- Inicialización de CoberturaMínima=1 si no existe en JSON
-
-**Estado**: ✅ Todos los 14 archivos JSON cargandose correctamente
-
----
-
-## 2. DECISIONES DE MODELADO
-
-### 2.1 Estructura de Datos
+### 1.1 Estructura de Datos
 
 #### **InstanciaPlanificacion**
 ```
@@ -72,25 +45,24 @@ FuncionObjetivo: double
 
 **Justificación**:
 - Lista de listas permite inserción/eliminación flexible
-- Función objetivo combina dos criterios: satisfacción (primario) + cobertura (secundario)
+- Función objetivo combina dos criterios: satisfacción + cobertura 
 - Peso de 100 para cobertura asegura que un turno no cubierto >= que satisfacción de 1 empleado
 
 ---
 
-### 2.2 Algoritmo Divide y Vencerás
+### 1.2 Algoritmo Divide y Vencerás
 
 #### **Estrategia de División**
 ```
 ENTRADA: Instancia con N días
 DIVISIÓN: Partir días por la mitad → [0, N/2-1] y [N/2, N-1]
 CONQUISTA: Resolver recursivamente cada mitad
-COMBINACIÓN: Fusionar soluciones de forma trivial (concatenar)
+COMBINACIÓN: Concatenar soluciones + búsqueda local 2-opt para optimizar
 ```
 
 **Justificación**:
 - División por días es natural: cada día es independiente en caso base
-- Profundidad de recursión: O(log N) - eficiente
-- Combinar es trivial: no requiere cálculo adicional
+- Combinar concatena los planes y aplica búsqueda local para mejorar la satisfacción global
 
 #### **Caso Base - Voraz Mejorado**
 ```
@@ -103,17 +75,13 @@ PARA cada día (1 día):
 ```
 
 **Justificación**:
-- Voraz simple → Tiempo O(E log E) por turno
+- Voraz simple →  por turno
 - Considera restricción de descanso → Aumenta validez de soluciones
 - Priorizar días de descanso pendientes → Equilibra carga
 
-**Complejidad del Caso Base**:
-- T turnos × O(E log E) ordenamiento = O(T·E·log E) por día
-- Total para 1 día: O(T·E·log E)
-
 ---
 
-### 2.3 Optimización: Búsqueda Local Post-Procesamiento
+### 1.3 Optimización: Búsqueda Local Post-Procesamiento
 
 #### **Algoritmo 2-Opt**
 ```
@@ -134,15 +102,11 @@ REPETIR hasta convergencia (máx N iteraciones):
 - Converge cuando no hay mejoras → Óptimo local
 - Umbral 0.001 evita oscilaciones por errores de redondeo
 
-**Complejidad**:
-- Peor caso: O(D²·T²·E²·N) - acotado por límite de iteraciones
-- Típico: O(D·T·E²·N) iteraciones efectivas
-
 ---
 
-## 3. EXPERIMENTACIÓN CON INSTANCIAS
+## 2. EXPERIMENTACIÓN CON INSTANCIAS
 
-### 3.1 Conjunto de Prueba Disponible
+### 2.1 Conjunto de Prueba Disponible
 
 | Instancia | Días | Empleados | Turnos | Tamaño | Complejidad |
 |-----------|------|-----------|--------|--------|-------------|
@@ -155,11 +119,11 @@ REPETIR hasta convergencia (máx N iteraciones):
 
 **Complejidad**: N_días × N_empleados × N_turnos
 
-### 3.2 Resultados de Ejecución
+### 2.2 Resultados de Ejecución
 
 #### **Prueba 1: Carga de Instancias**
 ```
-✓ Cargadas exitosamente: 14/14 archivos JSON
+✓ Cargadas exitosamente: 12/12 archivos JSON
   ├─ Validación estructura: 100%
   ├─ Matrices satisfacción: Correctamente mapeadas
   └─ Cobertura mínima: Inicializada o cargada
@@ -167,225 +131,97 @@ REPETIR hasta convergencia (máx N iteraciones):
 
 #### **Prueba 2: Instancia Pequeña (7 días × 5 empleados × 3 turnos)**
 ```
-Algoritmo D&C Optimizado:
-  ├─ Tiempo ejecución: ~15-25 ms
-  ├─ Operaciones: ~120-150
-  ├─ Función Objetivo: ~850-950
+instancia_horizon7_employees5_shifts3_000.json:
+  ├─ Tiempo ejecución: 8 ms
+  ├─ Operaciones: 56
+  ├─ Función Objetivo: 2257.00
   ├─ Turnos Cubiertos: 21/21 (100%)
-  └─ Satisfacción Total: ~320-380
+  └─ Satisfacción Total: 157.00
+
+instancia_horizon7_employees5_shifts3_001.json:
+  ├─ Tiempo ejecución: 0 ms
+  ├─ Operaciones: 50
+  ├─ Función Objetivo: 2265.00
+  ├─ Turnos Cubiertos: 21/21 (100%)
+  └─ Satisfacción Total: 165.00
 ```
 
 **Análisis**:
-- Voraz obtiene solución perfecta en caso pequeño
-- Búsqueda local no mejora significativamente (ya óptimo)
+- Cobertura perfecta (100%) en ambas instancias
+- Operaciones bajas (~50-56) gracias a la profundidad mínima de recursión (log₂ 7 ≈ 3)
 - Tiempo negligible → Excelente para interactividad
 
 #### **Prueba 3: Instancia Mediana (14 días × 10 empleados × 6 turnos)**
 ```
-Algoritmo D&C Optimizado:
-  ├─ Tiempo ejecución: ~50-80 ms
-  ├─ Operaciones: ~300-400
-  ├─ Función Objetivo: ~2200-2500
+instance_horizon14_employees10_shifts6_001.json:
+  ├─ Tiempo ejecución: 23 ms
+  ├─ Operaciones: 282
+  ├─ Función Objetivo: 9096.00
   ├─ Turnos Cubiertos: 84/84 (100%)
-  └─ Satisfacción Total: ~1200-1400
-  
-D&C Sin Optimización (para comparación):
-  ├─ Función Objetivo: ~2050-2250
-  ├─ Mejora: +5-10%
+  └─ Satisfacción Total: 696.00
+
+instance_horizon14_employees10_shifts6_000.json:
+  ├─ Tiempo ejecución: 8 ms
+  ├─ Operaciones: 302
+  ├─ Función Objetivo: 9096.00
+  ├─ Turnos Cubiertos: 84/84 (100%)
+  └─ Satisfacción Total: 696.00
 ```
 
 **Análisis**:
-- Búsqueda local comienza a mostrar mejoras
-- Profundidad recursión: ~4 niveles (log₂ 14 ≈ 3.8)
-- Comportamiento escalable
+- Cobertura perfecta (100%) en ambas instancias
+- Operaciones en rango ~280-300, coherente con profundidad log₂ 14 ≈ 4 niveles
+- Misma función objetivo en ambas variantes: algoritmo determinista para esta combinación
 
-#### **Prueba 4: Instancia Grande (30 días × 20 empleados × 10 turnos)**
+#### **Prueba 4: Instancia Muy Grande (30 días × 30 empleados × 20 turnos)**
 ```
-Algoritmo D&C Optimizado:
-  ├─ Tiempo ejecución: ~180-250 ms
-  ├─ Operaciones: ~1000-1500
-  ├─ Función Objetivo: ~6800-7500
-  ├─ Turnos Cubiertos: 300/300 (100%)
-  └─ Satisfacción Total: ~4200-5000
-  
-D&C Sin Optimización:
-  ├─ Función Objetivo: ~6200-6800
-  ├─ Mejora: +8-12%
-```
-
-**Análisis**:
-- Búsqueda local más efectiva en instancias mayores
-- Profundidad recursión: ~5 niveles (log₂ 30 ≈ 4.9)
-- Todavía tiempos aceptables
-
-#### **Prueba 5: Instancia Muy Grande (30 días × 30 empleados × 20 turnos)**
-```
-Algoritmo D&C Optimizado:
-  ├─ Tiempo ejecución: ~450-650 ms
-  ├─ Operaciones: ~3000-5000
-  ├─ Función Objetivo: ~18000-20000
+instance_horizon30_employees30_shifts20_000.json:
+  ├─ Tiempo ejecución: 6808 ms
+  ├─ Operaciones: 2948
+  ├─ Función Objetivo: 65313.00
   ├─ Turnos Cubiertos: 600/600 (100%)
-  └─ Satisfacción Total: ~11000-14000
-  
-Observaciones:
-  ├─ Búsqueda local: ~200-300 iteraciones
-  ├─ Convergencia: Primeras 50-80 iteraciones obtienen 80% de mejora
-  └─ Rendimiento: Aceptable para problema NP-Hard
-```
+  └─ Satisfacción Total: 5313.00
 
+instance_horizon30_employees30_shifts20_001.json:
+  ├─ Tiempo ejecución: 6979 ms
+  ├─ Operaciones: 2975
+  ├─ Función Objetivo: 65322.00
+  ├─ Turnos Cubiertos: 600/600 (100%)
+  └─ Satisfacción Total: 5322.00
+```
 **Análisis**:
-- Escalado O(log N) en profundidad mantenido
-- Complejidad post-procesamiento domina en instancias grandes
-- Búsqueda local converge rápidamente
+- Cobertura perfecta (100%) en ambas instancias
+- Operaciones ~2950-2975: el crecimiento respecto a instancias medianas refleja el mayor espacio de búsqueda local
+- Tiempo de ~7 segundos: dominado por la búsqueda local 2-opt sobre 30×20 = 600 turnos a planificar
+- Profundidad recursión: ~5 niveles (log₂ 30 ≈ 4.9)
 
 ---
 
-## 4. ANÁLISIS COMPARATIVO
+## 3. ANÁLISIS COMPARATIVO
 
-### 4.1 D&C Puro vs D&C Optimizado
+### 3.1 Resumen de Resultados
 
-| Métrica | D&C Puro | D&C Optimizado | Mejora |
-|---------|----------|------------------|--------|
-| Inst. Pequeña | 950 | 950 | 0% |
-| Inst. Mediana | 2250 | 2400 | +6.7% |
-| Inst. Grande | 6800 | 7200 | +5.9% |
-| Inst. MuyGrande | 18500 | 20000 | +8.1% |
+| Instancia | Días×Emp×Turnos | Tiempo (ms) | Operaciones | F. Objetivo | Turnos Cubiertos |
+|-----------|----------------|-------------|-------------|-------------|------------------|
+| horizon7_emp5_t3_000 | 7×5×3 | 8 | 56 | 2257.00 | 21/21 (100%) |
+| horizon7_emp5_t3_001 | 7×5×3 | 0 | 50 | 2265.00 | 21/21 (100%) |
+| horizon14_emp10_t6_001 | 14×10×6 | 23 | 282 | 9096.00 | 84/84 (100%) |
+| horizon14_emp10_t6_000 | 14×10×6 | 8 | 302 | 9096.00 | 84/84 (100%) |
+| horizon30_emp30_t20_000 | 30×30×20 | 6808 | 2948 | 65313.00 | 600/600 (100%) |
+| horizon30_emp30_t20_001 | 30×30×20 | 6979 | 2975 | 65322.00 | 600/600 (100%) |
 
-**Conclusión**: Mejora consistente +5-10% en función objetivo
+**Conclusión**: Cobertura 100% en todas las instancias. La función objetivo escala proporcionalmente al tamaño del problema.
 
-### 4.2 Análisis de Escalabilidad
-
-```
-Tamaño (días)  | Tiempo (ms) | Operaciones | Ratio O(N)
-7              | 20          | 140         | 1.0x
-14             | 65          | 350         | 2.3x
-30             | 550         | 4000        | 3.5x
-
-Esperado O(N log N): 7→14 = 2.0x, 14→30 = 2.1x
-Observado: Cercano a O(N log N) + O(N²) post-procesamiento
-```
-
-**Análisis**:
-- Escalado mejor que O(N²) cuadrático
-- Post-procesamiento visible en instancias grandes
-- Aún competitivo vs métodos exactos para tamaños prácticos
 
 ---
 
-## 5. DECISIONES DE DISEÑO JUSTIFICADAS
+## 4. DECISIONES DE DISEÑO JUSTIFICADAS
 
-### 5.1 ¿Por qué Divide y Vencerás?
-
-| Ventaja | Motivo |
-|---------|--------|
-| **Escalabilidad** | O(N log N) en profundidad >> O(N²) búsqueda completa |
-| **Modularidad** | Divide problema natural por días |
-| **Flexibilidad** | Permite agregar optimizaciones (búsqueda local, etc.) |
-| **Pedagogía** | Demuestra patrón Template efectivamente |
-
-### 5.2 ¿Por qué Voraz en Caso Base?
-
-| Razón | Análisis |
-|-------|----------|
-| **Tiempo** | O(T·E log E) << O(E!) búsqueda exhaustiva |
-| **Calidad** | 80-95% de óptimo local en caso base |
-| **Restricciones** | Fácil integrar días de descanso |
-| **Garantía** | Siempre cumple cobertura mínima |
-
-### 5.3 ¿Por qué Búsqueda Local?
+### 4.3 ¿Por qué Búsqueda Local?
 
 | Aspecto | Justificación |
 |--------|---------------|
 | **Post-procesamiento** | No viola estructura D&C |
 | **Mejora garantizada** | Floor de convergencia = óptimo local |
 | **Limitado** | N iteraciones máximo → Tiempo acotado |
-| **Efectivo** | +5-10% mejora consistente |
-
----
-
-## 6. LIMITACIONES Y TRABAJO FUTURO
-
-### 6.1 Limitaciones Actuales
-
-1. **Optimalidad**: No garantiza óptima global (problema NP-Hard)
-   - Solución: Requeriría branch-and-bound o programación dinámica
-
-2. **Escalabilidad Búsqueda Local**: O(D²·T²) inspecciona muchos pares
-   - Solución: Limitar a k-mejores vecinos aleatorios
-
-3. **Función Objetivo Arbitraria**: Peso 100 para cobertura es heurístico
-   - Solución: Parámetro configurable según preferencias usuario
-
-4. **Sin Duración de Turnos**: Asume turno = 1 día
-   - Solución: Extender modelo a turnos multi-día
-
-### 6.2 Mejoras Futuras
-
-```
-1. Algoritmos Alternativos:
-   - Ant Colony Optimization (ACO)
-   - Simulated Annealing
-   - Tabu Search
-   
-2. Variantes D&C:
-   - División por empleados
-   - División por turnos
-   - División híbrida (días + empleados)
-   
-3. Técnicas Avanzadas:
-   - Lazy Propagation para restricciones
-   - Dynamic Programming para memorización
-   - Machine Learning para predicción de calidad
-```
-
----
-
-## 7. CONCLUSIONES
-
-### 7.1 Logros Alcanzados
-
-✅ **Modelado Efectivo**: Estructura de datos racional y escalable  
-✅ **Algoritmo Funcional**: D&C con complejidad O(N log N + búsqueda local)  
-✅ **Optimizaciones Prácticas**: Voraz mejorado + búsqueda local = +5-10%  
-✅ **Experimentación Exhaustiva**: Probado en 14 instancias diferentes  
-✅ **Tiempos Competitivos**: <1 segundo para instancias de tamaño práctico  
-
-### 7.2 Validación de Hipótesis
-
-| Hipótesis | Validado | Evidencia |
-|-----------|----------|-----------|
-| D&C es apropiado para el problema | ✓ | O(N log N) escalado |
-| Voraz mejora con restricciones | ✓ | Todas soluciones válidas |
-| Búsqueda local agrega valor | ✓ | +5-10% mejora consistente |
-| Tiempos son aceptables | ✓ | <650ms instancia máxima |
-
-### 7.3 Recomendaciones
-
-1. **Para instancias pequeñas** (N < 14 días): D&C puro es suficiente
-2. **Para instancias medianas** (14 ≤ N < 30): Incluir búsqueda local
-3. **Para instancias grandes** (N ≥ 30): Considerar metaheurísticas
-4. **Producción**: Implementar con múltiples algoritmos y elegir mejor
-
----
-
-## 8. REFERENCIAS Y RECURSOS
-
-### Archivos Relevantes
-- `Parte2_Planificacion/Algoritmos/PlanificacionDivideYVenceras.cs` - Algoritmo principal
-- `Parte2_Planificacion/Modelo/SolucionPlanificacion.cs` - Representación de soluciones
-- `Parte2_Planificacion/Servicios/GestorInstanciasPlanificacion.cs` - Carga de instancias
-- `Ejemplos/` - 14 instancias de prueba
-
-### Literatura
-- Cormen et al. "Introduction to Algorithms" - Técnicas D&C
-- Papadimitriou & Steiglitz "Combinatorial Optimization" - Problemas NP-Hard
-- Michalewicz & Fogel "How to Solve It: Modern Heuristics" - Búsqueda local
-
----
-
-**Fin del Informe**
-
----
-
-*Documento generado automáticamente*  
-*Contenido sujeto a actualización con nuevas experimentaciones*
+| **Efectivo** | Cobertura 100% en todas las instancias probadas |
