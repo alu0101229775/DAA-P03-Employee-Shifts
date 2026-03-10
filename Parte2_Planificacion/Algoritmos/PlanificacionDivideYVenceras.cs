@@ -9,13 +9,19 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
     /// <summary>
     /// Algoritmo de Divide y Vencerás para planificación de empleados.
     /// 
-    /// - Caso base: 1 día (resuelto con algoritmo voraz)
+    /// - Caso base: 1 día (resuelto con algoritmo voraz OPTIMIZADO que respeta descansos)
     /// - División: Divide los días en dos mitades
     /// - Conquista: Resuelve recursivamente cada mitad
-    /// - Combinación: Mezcla las soluciones
+    /// - Combinación: Mezcla las soluciones + BÚSQUEDA LOCAL (2-opt) para optimizar
+    /// 
+    /// OPTIMIZACIONES APLICADAS:
+    /// 1. Voraz mejorado: Considera restricciones de días de descanso del empleado
+    /// 2. Post-procesamiento: Búsqueda local 2-opt después de combinar particiones
     /// </summary>
     public class PlanificacionDivideYVenceras : AlgoritmoDyV
     {
+        // Variable para almacenar la instancia durante resolución (necesaria para búsqueda local)
+        private InstanciaPlanificacion _instanciaActual;
         public PlanificacionDivideYVenceras()
         {
             Nombre = "Planificación Empleados D&C";
@@ -32,8 +38,9 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
         }
 
         /// <summary>
-        /// Resuelve el caso base (1 día) con algoritmo voraz.
-        /// Para cada turno, asigna los empleados más satisfechos hasta cubrir el mínimo.
+        /// Resuelve el caso base (1 día) con algoritmo voraz mejorado.
+        /// Para cada turno, asigna empleados considerando satisfacción Y respetando días de descanso.
+        /// OPTIMIZACIÓN: Válida restricciones de descanso para aumentar validez de soluciones.
         /// </summary>
         protected override Solucion ResolverPequenio(Instancia instancia)
         {
@@ -42,31 +49,43 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
 
             NumOperaciones++;
             var sol = new SolucionPlanificacion(inst.NumDias, inst.NumTurnos, inst.NumEmpleados);
+            var diasDescansoEmpleados = inst.ObtenerDiasDescansoEmpleados();
 
             double satisfaccionTotal = 0;
             int turnosCubiertos = 0;
 
-            // Voraz: para cada turno, asignar empleados más satisfechos
+            // Voraz mejorado: considera satisfacción Y restricciones de descanso
             for (int d = 0; d < inst.NumDias; d++)
             {
                 for (int t = 0; t < inst.NumTurnos; t++)
                 {
                     int coberturaMínima = inst.CoberturaMínima[d, t];
 
-                    // Obtener empleados ordenados por satisfacción descendente
-                    var empleados = new List<(int id, double sat)>();
+                    // Obtener empleados válidos (respetan descanso) ordenados por satisfacción
+                    var empleadosValidos = new List<(int id, double sat, int diasDescansoRestantes)>();
                     for (int e = 0; e < inst.NumEmpleados; e++)
                     {
-                        empleados.Add((e, inst.Satisfaccion[d, e, t]));
+                        int diasDescansoRestantes = diasDescansoEmpleados[e];
+                        // Filtrar: empleado ya tiene días de descanso suficientes O puede trabajar este turno
+                        if (diasDescansoRestantes > 0 || diasDescansoEmpleados[e] >= inst.Empleados[e].DiasDescanso)
+                        {
+                            empleadosValidos.Add((e, inst.Satisfaccion[d, e, t], diasDescansoRestantes));
+                        }
                     }
-                    empleados = empleados.OrderByDescending(x => x.sat).ToList();
+
+                    // Ordenar: primero por satisfacción, luego por días de descanso pendientes
+                    empleadosValidos = empleadosValidos
+                        .OrderByDescending(x => x.sat)
+                        .ThenByDescending(x => x.diasDescansoRestantes)
+                        .ToList();
 
                     // Asignar los mejores empleados hasta cubrir el mínimo
                     int asignados = 0;
-                    for (int i = 0; i < empleados.Count && asignados < coberturaMínima; i++)
+                    for (int i = 0; i < empleadosValidos.Count && asignados < coberturaMínima; i++)
                     {
-                        sol.AsignarEmpleado(d, t, empleados[i].id);
-                        satisfaccionTotal += empleados[i].sat;
+                        sol.AsignarEmpleado(d, t, empleadosValidos[i].id);
+                        satisfaccionTotal += empleadosValidos[i].sat;
+                        diasDescansoEmpleados[empleadosValidos[i].id]--; // Reduce días de descanso pendientes
                         asignados++;
                     }
 
@@ -101,6 +120,7 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
 
         /// <summary>
         /// Combina n soluciones en una solución completa.
+        /// OPTIMIZACIÓN: Aplica búsqueda local (2-opt) post-procesamiento para mejorar la solución combinada.
         /// </summary>
         protected override Solucion Combinar(Solucion[] soluciones)
         {
@@ -114,11 +134,100 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
 
             NumOperaciones++;
 
-            return sol1.Combinar(sol2);
+            var solucionCombinada = sol1.Combinar(sol2) as SolucionPlanificacion;
+            
+            // OPTIMIZACIÓN: Aplicar búsqueda local para mejorar la solución
+            if (solucionCombinada != null)
+            {
+                AplicarBúsquedaLocal(solucionCombinada);
+            }
+
+            return solucionCombinada;
+        }
+
+        /// <summary>
+        /// Aplica búsqueda local (vecindario 2-opt) para mejorar una solución.
+        /// Intenta intercambiar asignaciones entre empleados para aumentar satisfacción.
+        /// OPTIMIZACIÓN: Mejora iterativa sin cambiar estructura D&C.
+        /// </summary>
+        private void AplicarBúsquedaLocal(SolucionPlanificacion sol)
+        {
+            if (sol == null) return;
+
+            bool mejora = true;
+            int iteraciones = 0;
+            int maxIteraciones = sol.NumDias * sol.NumTurnos; // Límite para no ser demasiado costoso
+
+            while (mejora && iteraciones < maxIteraciones)
+            {
+                mejora = false;
+                iteraciones++;
+
+                // Intentar intercambiar asignaciones entre dos posiciones
+                for (int d1 = 0; d1 < sol.NumDias && !mejora; d1++)
+                {
+                    for (int t1 = 0; t1 < sol.NumTurnos && !mejora; t1++)
+                    {
+                        for (int i = 0; i < sol.Plan[d1][t1].Count && !mejora; i++)
+                        {
+                            int emp1 = sol.Plan[d1][t1][i];
+
+                            // Comparar con otro turno
+                            for (int d2 = 0; d2 < sol.NumDias && !mejora; d2++)
+                            {
+                                for (int t2 = 0; t2 < sol.NumTurnos && !mejora; t2++)
+                                {
+                                    if (d1 == d2 && t1 == t2) continue;
+
+                                    for (int j = 0; j < sol.Plan[d2][t2].Count && !mejora; j++)
+                                    {
+                                        int emp2 = sol.Plan[d2][t2][j];
+                                        if (emp1 == emp2) continue;
+
+                                        // Calcular ganancia de intercambiar emp1 y emp2
+                                        double mejora_potencial = CalcularMejoraIntercambio(
+                                            sol, emp1, emp2, d1, t1, d2, t2);
+
+                                        if (mejora_potencial > 0.001) // Umbral mínimo
+                                        {
+                                            // Realizar intercambio
+                                            sol.Plan[d1][t1][i] = emp2;
+                                            sol.Plan[d2][t2][j] = emp1;
+                                            mejora = true;
+                                            NumOperaciones++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Calcula la mejora potencial de intercambiar dos empleados en posiciones diferentes.
+        /// Compara ganancias de satisfacción antes y después del intercambio.
+        /// </summary>
+        private double CalcularMejoraIntercambio(SolucionPlanificacion sol, int emp1, int emp2,
+            int d1, int t1, int d2, int t2)
+        {
+            if (_instanciaActual == null) return 0;
+
+            // Satisfacción actual:
+            double satAntes = _instanciaActual.Satisfaccion[d1, emp1, t1] +
+                              _instanciaActual.Satisfaccion[d2, emp2, t2];
+
+            // Satisfacción después de intercambiar:
+            double satDespues = _instanciaActual.Satisfaccion[d1, emp2, t1] +
+                                _instanciaActual.Satisfaccion[d2, emp1, t2];
+
+            return satDespues - satAntes;
         }
 
         /// <summary>
         /// Resuelve una instancia de planificación.
+        /// OPTIMIZACIÓN: Almacena la instancia para que búsqueda local pueda acceder a matrices.
         /// </summary>
         public override Solucion Resolver(Instancia instancia)
         {
@@ -130,6 +239,7 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
             if (!inst.EsValida())
                 throw new InvalidOperationException("Instancia inválida.");
 
+            _instanciaActual = inst; // Guardar para búsqueda local
             return ResolverDivideYVenceras(instancia);
         }
 
