@@ -220,7 +220,7 @@ namespace DAA_P03
                     if (instancia.Satisfaccion == null || instancia.CoberturaMínima == null)
                     {
                         Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine($"  ⚠ ADVERTENCIA: Matrices nulas");
+                        Console.WriteLine($"  ADVERTENCIA: Matrices nulas");
                         Console.ResetColor();
                         errores++;
                         continue;
@@ -330,8 +330,8 @@ namespace DAA_P03
                 if (solucion is SolucionPlanificacion solPlanificacion)
                 {
                     Console.WriteLine(solPlanificacion.ObtenerRepresentacionTabla(instancia));
-                    Console.WriteLine($"\n⏱ Tiempo de ejecución: {cronometro.ElapsedMilliseconds}ms");
-                    Console.WriteLine($"📊 Operaciones realizadas: {algoritmo.NumOperaciones}");
+                    Console.WriteLine($"\nTiempo de ejecución: {cronometro.ElapsedMilliseconds}ms");
+                    Console.WriteLine($"Operaciones realizadas: {algoritmo.NumOperaciones}");
                 }
 
                 Console.WriteLine("\nPresione cualquier tecla para volver...");
