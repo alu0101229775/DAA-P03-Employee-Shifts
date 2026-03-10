@@ -18,8 +18,9 @@ namespace DAA_P03
     /// - PARTE 2: Planificación de empleados
     /// 
     /// Modos de ejecución:
-    /// - Modo Normal: Selecciona algoritmo, ejecuta con diferentes tamaños, muestra tiempos
-    /// - Modo Debug: Selecciona algoritmo, tamaño, muestra instancia y solución completa
+    /// - Modo Comparativo: Compara MergeSort vs QuickSort con diferentes tamaños
+    /// - Modo Normal: Elige algoritmo, ejecuta con diferentes tamaños, muestra tiempos
+    /// - Modo Debug: Elige algoritmo y tamaño, muestra instancia y solución completa
     /// </summary>
     class Program
     {
@@ -29,23 +30,18 @@ namespace DAA_P03
             MostrarMenuPrincipal();
         }
 
-        /// <summary>
-        /// Muestra el menú principal de la aplicación.
-        /// </summary>
         static void MostrarMenuPrincipal()
         {
-            bool salir = false;
-
-            while (!salir)
+            while (true)
             {
                 Console.Clear();
-                Console.WriteLine("╔" + new string('═', 78) + "╗");
-                Console.WriteLine("║" + "SISTEMA DE ANÁLISIS DE ALGORITMOS - DIVIDE Y VENCERÁS".PadLeft(78) + "║");
-                Console.WriteLine("╚" + new string('═', 78) + "╝");
+                Console.WriteLine("═══════════════════════════════════════════════════════");
+                Console.WriteLine("   PRÁCTICA 3 - ALGORITMOS DIVIDE Y VENCERÁS");
+                Console.WriteLine("═══════════════════════════════════════════════════════");
                 Console.WriteLine();
                 Console.WriteLine("Seleccione la parte a ejecutar:");
                 Console.WriteLine();
-                Console.WriteLine("  [1] PARTE 1: Algoritmos de Ordenamiento (MergeSort, QuickSort)");
+                Console.WriteLine("  [1] PARTE 1: Algoritmos de Ordenamiento");
                 Console.WriteLine("  [2] PARTE 2: Planificación de Empleados");
                 Console.WriteLine("  [0] Salir");
                 Console.WriteLine();
@@ -56,41 +52,36 @@ namespace DAA_P03
                 switch (opcion)
                 {
                     case "1":
-                        MenuParte1();
+                        MostrarMenuParte1();
                         break;
                     case "2":
-                        MenuParte2();
+                        MostrarMenuParte2();
                         break;
                     case "0":
-                        salir = true;
-                        break;
+                        return;
                     default:
-                        Console.WriteLine("Opción no válida. Presione cualquier tecla...");
+                        Console.WriteLine("\nOpción inválida. Presione cualquier tecla...");
                         Console.ReadKey();
                         break;
                 }
             }
         }
 
-        /// <summary>
-        /// Menú para la PARTE 1: Algoritmos de Ordenamiento.
-        /// </summary>
-        static void MenuParte1()
+        static void MostrarMenuParte1()
         {
-            bool volver = false;
-
-            while (!volver)
+            while (true)
             {
                 Console.Clear();
-                Console.WriteLine("╔" + new string('═', 78) + "╗");
-                Console.WriteLine("║" + "PARTE 1: ALGORITMOS DE ORDENAMIENTO".PadLeft(78) + "║");
-                Console.WriteLine("╚" + new string('═', 78) + "╝");
+                Console.WriteLine("═══════════════════════════════════════════════════════");
+                Console.WriteLine("   PARTE 1: ALGORITMOS DE ORDENAMIENTO");
+                Console.WriteLine("═══════════════════════════════════════════════════════");
                 Console.WriteLine();
                 Console.WriteLine("Seleccione el modo de ejecución:");
                 Console.WriteLine();
-                Console.WriteLine("  [1] Modo Normal (Comparar tiempos con múltiples tamaños)");
-                Console.WriteLine("  [2] Modo Debug (Ver instancia y solución)");
-                Console.WriteLine("  [0] Volver al menú principal");
+                Console.WriteLine("  [1] Modo Comparativo (MergeSort vs QuickSort)");
+                Console.WriteLine("  [2] Modo Normal (un algoritmo, múltiples tamaños)");
+                Console.WriteLine("  [3] Modo Debug (instancia y solución detalladas)");
+                Console.WriteLine("  [0] Volver");
                 Console.WriteLine();
                 Console.Write("Opción: ");
 
@@ -99,283 +90,298 @@ namespace DAA_P03
                 switch (opcion)
                 {
                     case "1":
-                        ModoNormalOrdenamiento();
+                        EjecutarModoComparativo();
                         break;
                     case "2":
-                        ModoDebugOrdenamiento();
+                        EjecutarModoNormal();
+                        break;
+                    case "3":
+                        EjecutarModoDebug();
                         break;
                     case "0":
-                        volver = true;
-                        break;
+                        return;
                     default:
-                        Console.WriteLine("Opción no válida. Presione cualquier tecla...");
+                        Console.WriteLine("\nOpción inválida. Presione cualquier tecla...");
                         Console.ReadKey();
                         break;
                 }
             }
         }
 
-        /// <summary>
-        /// Modo Normal: Compara el rendimiento de MergeSort y QuickSort con múltiples tamaños.
-        /// </summary>
-        static void ModoNormalOrdenamiento()
+        static void MostrarMenuParte2()
         {
             Console.Clear();
-            Console.WriteLine("╔" + new string('═', 78) + "╗");
-            Console.WriteLine("║" + "MODO NORMAL - COMPARACIÓN DE ALGORITMOS".PadLeft(78) + "║");
-            Console.WriteLine("╚" + new string('═', 78) + "╝");
+            Console.WriteLine("═══════════════════════════════════════════════════════");
+            Console.WriteLine("   PARTE 2: PLANIFICACIÓN DE EMPLEADOS");
+            Console.WriteLine("═══════════════════════════════════════════════════════");
+            Console.WriteLine();
+            Console.WriteLine("Esta funcionalidad estará disponible próximamente.");
+            Console.WriteLine();
+            Console.WriteLine("Presione cualquier tecla para volver...");
+            Console.ReadKey();
+        }
+
+        static void EjecutarModoComparativo()
+        {
+            Console.Clear();
+            Console.WriteLine("═══════════════════════════════════════════════════════");
+            Console.WriteLine("   MODO COMPARATIVO: MergeSort vs QuickSort");
+            Console.WriteLine("═══════════════════════════════════════════════════════");
             Console.WriteLine();
 
-            // Tamaños a probar
+            Console.Write("Número de repeticiones por tamaño (sugerido: 5-10): ");
+            if (!int.TryParse(Console.ReadLine(), out int repeticiones) || repeticiones < 1)
+            {
+                Console.WriteLine("\nNúmero de repeticiones inválido.");
+                Console.WriteLine("Presione cualquier tecla...");
+                Console.ReadKey();
+                return;
+            }
+
             int[] tamaños = { 100, 500, 1000, 5000, 10000, 50000, 100000 };
-            int repeticiones = 3;
+            var resultados = new List<(int tamaño, double tiempoMerge, double tiempoQuick)>();
 
-            Console.WriteLine($"Se ejecutarán los algoritmos con tamaños: {string.Join(", ", tamaños)}");
-            Console.WriteLine($"Repeticiones por tamaño: {repeticiones}");
             Console.WriteLine();
-            Console.WriteLine("Procesando...\n");
+            Console.WriteLine("Ejecutando pruebas...");
+            Console.WriteLine();
 
             var mergeSort = new MergeSort();
             var quickSort = new QuickSort();
 
-            var resultados = new List<(int tamaño, double tiempoMerge, double tiempoQuick)>();
-
-            for (int i = 0; i < tamaños.Length; i++)
+            foreach (int tamaño in tamaños)
             {
-                int tamaño = tamaños[i];
-                double sumaTimesMerge = 0;
-                double sumaTimesQuick = 0;
+                long sumaTiemposMerge = 0;
+                long sumaTiemposQuick = 0;
 
                 for (int rep = 0; rep < repeticiones; rep++)
                 {
-                    // Crear la misma instancia para ambos algoritmos
-                    var instancia = new InstanciaOrdenamiento(tamaño, tamaño + rep);
+                    var instanciaBase = new InstanciaOrdenamiento(tamaño, tamaño + rep);
 
-                    // Ejecutar MergeSort
-                    mergeSort.ResolverConTiempo(instancia.ObtenerCopia());
-                    sumaTimesMerge += mergeSort.TiempoEjecucion;
+                    var instanciaMerge = new InstanciaMergeSort(instanciaBase.Numeros);
+                    mergeSort.ResolverConTiempo(instanciaMerge);
+                    sumaTiemposMerge += mergeSort.TiempoEjecucion;
 
-                    // Ejecutar QuickSort
-                    quickSort.ResolverConTiempo(instancia.ObtenerCopia());
-                    sumaTimesQuick += quickSort.TiempoEjecucion;
+                    var instanciaQuick = new InstanciaQuickSort((int[])instanciaBase.Numeros.Clone());
+                    quickSort.ResolverConTiempo(instanciaQuick);
+                    sumaTiemposQuick += quickSort.TiempoEjecucion;
                 }
 
-                double promedioMerge = sumaTimesMerge / repeticiones;
-                double promedioQuick = sumaTimesQuick / repeticiones;
+                double promedioMerge = sumaTiemposMerge / (double)repeticiones;
+                double promedioQuick = sumaTiemposQuick / (double)repeticiones;
                 resultados.Add((tamaño, promedioMerge, promedioQuick));
-
-                Console.Write($"Tamaño {tamaño,6}: MergeSort={promedioMerge,8:F2}ms, " +
-                             $"QuickSort={promedioQuick,8:F2}ms\r");
             }
 
-            Console.WriteLine("\n");
-            MostrarTablaComparativa(resultados);
-
-            Console.WriteLine("\nPresione cualquier tecla para volver...");
-            Console.ReadKey();
-        }
-
-        /// <summary>
-        /// Modo Debug: Permite ver una instancia específica y su solución.
-        /// </summary>
-        static void ModoDebugOrdenamiento()
-        {
             Console.Clear();
-            Console.WriteLine("╔" + new string('═', 78) + "╗");
-            Console.WriteLine("║" + "MODO DEBUG - VER INSTANCIA Y SOLUCIÓN".PadLeft(78) + "║");
-            Console.WriteLine("╚" + new string('═', 78) + "╝");
+            Console.WriteLine("═══════════════════════════════════════════════════════");
+            Console.WriteLine("   RESULTADOS COMPARATIVOS");
+            Console.WriteLine("═══════════════════════════════════════════════════════");
             Console.WriteLine();
-
-            Console.WriteLine("Seleccione el algoritmo:");
-            Console.WriteLine("  [1] MergeSort");
-            Console.WriteLine("  [2] QuickSort");
-            Console.Write("\nOpción: ");
-
-            string algoritmo = Console.ReadLine();
-
-            Console.Write("Ingrese el tamaño de la instancia (10-1000): ");
-            if (!int.TryParse(Console.ReadLine(), out int tamaño) || tamaño < 10 || tamaño > 1000)
-            {
-                Console.WriteLine("Tamaño inválido.");
-                Console.ReadKey();
-                return;
-            }
-
-            Console.WriteLine("\nGenerando instancia...");
-
-            var instancia = new InstanciaOrdenamiento(tamaño, 42);
-            Algoritmo algo = algoritmo == "1" ? new MergeSort() : new QuickSort();
-
-            Console.WriteLine($"\nInstancia (Tamaño: {instancia.Tamaño}):");
-            Console.WriteLine(instancia.ToString());
-
-            Console.WriteLine("\nResolviendo...");
-            var inicio = DateTime.Now;
-            object resultado = algo.ResolverConTiempo(instancia);
-            var duracion = DateTime.Now - inicio;
-
-            if (resultado is SolucionOrdenamiento solucion)
-            {
-                Console.WriteLine($"\nSolución obtenida en {algo.TiempoEjecucion}ms:");
-                Console.WriteLine(solucion.ToString());
-
-                if (solucion.EsValida)
-                {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("✓ La solución es VÁLIDA (array correctamente ordenado)");
-                    Console.ResetColor();
-                }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("✗ La solución es INVÁLIDA (array NO correctamente ordenado)");
-                    Console.ResetColor();
-                }
-            }
-
-            Console.WriteLine("\nPresione cualquier tecla para volver...");
-            Console.ReadKey();
-        }
-
-        /// <summary>
-        /// Menú para la PARTE 2: Planificación de Empleados.
-        /// </summary>
-        static void MenuParte2()
-        {
-            bool volver = false;
-
-            while (!volver)
-            {
-                Console.Clear();
-                Console.WriteLine("╔" + new string('═', 78) + "╗");
-                Console.WriteLine("║" + "PARTE 2: PLANIFICACIÓN DE EMPLEADOS".PadLeft(78) + "║");
-                Console.WriteLine("╚" + new string('═', 78) + "╝");
-                Console.WriteLine();
-                Console.WriteLine("Seleccione una opción:");
-                Console.WriteLine();
-                Console.WriteLine("  [1] Ejecutar con instancia de prueba");
-                Console.WriteLine("  [2] Cargar instancia desde archivo JSON");
-                Console.WriteLine("  [3] Generar y exportar instancia de prueba");
-                Console.WriteLine("  [0] Volver al menú principal");
-                Console.WriteLine();
-                Console.Write("Opción: ");
-
-                string opcion = Console.ReadLine();
-
-                switch (opcion)
-                {
-                    case "1":
-                        CargarYEjecutarPlanificacion();
-                        break;
-                    case "2":
-                        ExportarInstanciaPrueba();
-                        break;
-                    case "0":
-                        volver = true;
-                        break;
-                    default:
-                        Console.WriteLine("Opción no válida. Presione cualquier tecla...");
-                        Console.ReadKey();
-                        break;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Ejecuta el algoritmo de planificación con una instancia específica.
-        /// </summary>
-        static void EjecutarPlanificacion(InstanciaPlanificacion instancia)
-        {
-            if (instancia == null)
-            {
-                Console.WriteLine("Error: Instancia nula.");
-                Console.ReadKey();
-                return;
-            }
-
-            Console.Clear();
-            Console.WriteLine("╔" + new string('═', 78) + "╗");
-            Console.WriteLine("║" + "EJECUCIÓN DEL ALGORITMO DE PLANIFICACIÓN".PadLeft(78) + "║");
-            Console.WriteLine("╚" + new string('═', 78) + "╝");
+            Console.WriteLine($"Repeticiones por tamaño: {repeticiones}");
             Console.WriteLine();
-
-            Console.WriteLine("Instancia:");
-            Console.WriteLine(instancia.ToString());
-            Console.WriteLine();
-
-            Console.WriteLine("Resolviendo...");
-            var algo = new PlanificacionDivideYVenceras();
-
-            var inicio = DateTime.Now;
-            var solucion = algo.ResolverConTiempo(instancia) as SolucionPlanificacion;
-            var duracion = (DateTime.Now - inicio).TotalMilliseconds;
-
-            if (solucion != null)
-            {
-                Console.WriteLine($"✓ Solución encontrada en {algo.TiempoEjecucion}ms");
-                Console.WriteLine(solucion.ObtenerRepresentacionTabla(instancia));
-            }
-            else
-            {
-                Console.WriteLine("✗ Error: No se pudo generar la solución.");
-            }
-
-            Console.WriteLine("\nPresione cualquier tecla para volver...");
-            Console.ReadKey();
-        }
-
-        /// <summary>
-        /// Carga una instancia desde un archivo JSON y la ejecuta.
-        /// </summary>
-        static void CargarYEjecutarPlanificacion()
-        {
-            Console.Clear();
-            Console.Write("Ingrese la ruta del archivo JSON: ");
-            string ruta = Console.ReadLine();
-
-            try
-            {
-                var instancia = GestorInstanciasPlanificacion.CargarDesdeJSON(ruta);
-                EjecutarPlanificacion(instancia);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                Console.ReadKey();
-            }
-        }
-
-        /// <summary>
-        /// Exporta una instancia de prueba a un archivo JSON.
-        /// </summary>
-        static void ExportarInstanciaPrueba()
-        {
-            Console.Clear();
-            Console.WriteLine("Para exportar una instancia, primero cargala desde un archivo JSON.");
-            Console.WriteLine("Usa la opción anterior para cargar y ejecutar una instancia.");
-            Console.ReadKey();
-        }
-
-        /// <summary>
-        /// Muestra una tabla comparativa de tiempos de ejecución.
-        /// </summary>
-        static void MostrarTablaComparativa(List<(int tamaño, double tiempoMerge, double tiempoQuick)> resultados)
-        {
-            Console.WriteLine(new string('═', 85));
-            Console.WriteLine("TABLA COMPARATIVA DE TIEMPOS DE EJECUCIÓN");
-            Console.WriteLine(new string('═', 85));
-            Console.WriteLine($"{"Tamaño",-15} {"MergeSort (ms)",-20} {"QuickSort (ms)",-20} {"Diferencia (ms)",-15}");
-            Console.WriteLine(new string('─', 85));
+            Console.WriteLine("┌────────────┬──────────────────┬──────────────────┬────────────┐");
+            Console.WriteLine("│   Tamaño   │   MergeSort (ms) │  QuickSort (ms)  │   Ganador  │");
+            Console.WriteLine("├────────────┼──────────────────┼──────────────────┼────────────┤");
 
             foreach (var (tamaño, tiempoMerge, tiempoQuick) in resultados)
             {
-                double diferencia = tiempoMerge - tiempoQuick;
-                string mejora = diferencia > 0 ? "QuickSort" : "MergeSort";
-
-                Console.WriteLine($"{tamaño,-15} {tiempoMerge,-20:F2} {tiempoQuick,-20:F2} {Math.Abs(diferencia),-15:F2}");
+                string ganador = tiempoMerge < tiempoQuick ? "MergeSort" : "QuickSort";
+                Console.WriteLine($"│ {tamaño,10} │ {tiempoMerge,16:F3} │ {tiempoQuick,16:F3} │ {ganador,10} │");
             }
 
-            Console.WriteLine(new string('═', 85));
+            Console.WriteLine("└────────────┴──────────────────┴──────────────────┴────────────┘");
+            Console.WriteLine();
+            Console.WriteLine("Presione cualquier tecla para continuar...");
+            Console.ReadKey();
+        }
+
+        static void EjecutarModoNormal()
+        {
+            Console.Clear();
+            Console.WriteLine("═══════════════════════════════════════════════════════");
+            Console.WriteLine("   MODO NORMAL: Ejecución con Múltiples Tamaños");
+            Console.WriteLine("═══════════════════════════════════════════════════════");
+            Console.WriteLine();
+
+            Console.WriteLine("Seleccione el algoritmo:");
+            Console.WriteLine();
+            Console.WriteLine("  [1] MergeSort");
+            Console.WriteLine("  [2] QuickSort");
+            Console.WriteLine();
+            Console.Write("Opción: ");
+
+            string opcionAlgo = Console.ReadLine();
+            Algoritmo algoritmo = null;
+
+            switch (opcionAlgo)
+            {
+                case "1":
+                    algoritmo = new MergeSort();
+                    break;
+                case "2":
+                    algoritmo = new QuickSort();
+                    break;
+                default:
+                    Console.WriteLine("\nOpción inválida.");
+                    Console.WriteLine("Presione cualquier tecla...");
+                    Console.ReadKey();
+                    return;
+            }
+
+            Console.WriteLine();
+            Console.Write("Número de repeticiones por tamaño (sugerido: 5-10): ");
+            if (!int.TryParse(Console.ReadLine(), out int repeticiones) || repeticiones < 1)
+            {
+                Console.WriteLine("\nNúmero de repeticiones inválido.");
+                Console.WriteLine("Presione cualquier tecla...");
+                Console.ReadKey();
+                return;
+            }
+
+            int[] tamaños = { 100, 500, 1000, 5000, 10000, 50000, 100000 };
+            var resultados = new List<(int tamaño, double tiempoPromedio)>();
+
+            Console.WriteLine();
+            Console.WriteLine($"Ejecutando {algoritmo.Nombre} con diferentes tamaños...");
+            Console.WriteLine();
+
+            foreach (int tamaño in tamaños)
+            {
+                long sumaTiempos = 0;
+
+                for (int rep = 0; rep < repeticiones; rep++)
+                {
+                    var instanciaBase = new InstanciaOrdenamiento(tamaño, tamaño + rep);
+                    Instancia instancia = null;
+
+                    if (algoritmo is MergeSort)
+                    {
+                        instancia = new InstanciaMergeSort(instanciaBase.Numeros);
+                    }
+                    else if (algoritmo is QuickSort)
+                    {
+                        instancia = new InstanciaQuickSort(instanciaBase.Numeros);
+                    }
+
+                    algoritmo.ResolverConTiempo(instancia);
+                    sumaTiempos += algoritmo.TiempoEjecucion;
+                }
+
+                double promedio = sumaTiempos / (double)repeticiones;
+                resultados.Add((tamaño, promedio));
+            }
+
+            Console.Clear();
+            Console.WriteLine("═══════════════════════════════════════════════════════");
+            Console.WriteLine($"   RESULTADOS: {algoritmo.Nombre}");
+            Console.WriteLine("═══════════════════════════════════════════════════════");
+            Console.WriteLine();
+            Console.WriteLine($"Repeticiones por tamaño: {repeticiones}");
+            Console.WriteLine();
+            Console.WriteLine("┌────────────┬──────────────────┐");
+            Console.WriteLine("│   Tamaño   │   Tiempo (ms)    │");
+            Console.WriteLine("├────────────┼──────────────────┤");
+
+            foreach (var (tamaño, tiempo) in resultados)
+            {
+                Console.WriteLine($"│ {tamaño,10} │ {tiempo,16:F3} │");
+            }
+
+            Console.WriteLine("└────────────┴──────────────────┘");
+            Console.WriteLine();
+            Console.WriteLine("Presione cualquier tecla para continuar...");
+            Console.ReadKey();
+        }
+
+        static void EjecutarModoDebug()
+        {
+            Console.Clear();
+            Console.WriteLine("═══════════════════════════════════════════════════════");
+            Console.WriteLine("   MODO DEBUG: Instancia y Solución Detalladas");
+            Console.WriteLine("═══════════════════════════════════════════════════════");
+            Console.WriteLine();
+
+            Console.WriteLine("Seleccione el algoritmo:");
+            Console.WriteLine();
+            Console.WriteLine("  [1] MergeSort");
+            Console.WriteLine("  [2] QuickSort");
+            Console.WriteLine();
+            Console.Write("Opción: ");
+
+            string opcionAlgo = Console.ReadLine();
+            Algoritmo algoritmo = null;
+
+            switch (opcionAlgo)
+            {
+                case "1":
+                    algoritmo = new MergeSort();
+                    break;
+                case "2":
+                    algoritmo = new QuickSort();
+                    break;
+                default:
+                    Console.WriteLine("\nOpción inválida.");
+                    Console.WriteLine("Presione cualquier tecla...");
+                    Console.ReadKey();
+                    return;
+            }
+
+            Console.WriteLine();
+            Console.Write("Ingrese el tamaño de la instancia (10-100 recomendado): ");
+            if (!int.TryParse(Console.ReadLine(), out int tamaño) || tamaño < 1)
+            {
+                Console.WriteLine("\nTamaño inválido.");
+                Console.WriteLine("Presione cualquier tecla...");
+                Console.ReadKey();
+                return;
+            }
+
+            Console.Clear();
+            Console.WriteLine("═══════════════════════════════════════════════════════");
+            Console.WriteLine($"   MODO DEBUG: {algoritmo.Nombre}");
+            Console.WriteLine("═══════════════════════════════════════════════════════");
+            Console.WriteLine();
+
+            var instanciaBase = new InstanciaOrdenamiento(tamaño, 42);
+
+            Console.WriteLine($"INSTANCIA GENERADA (Tamaño: {instanciaBase.Tamaño})");
+            Console.WriteLine("─────────────────────────────────────────────────────");
+            Console.WriteLine(instanciaBase.ToString());
+            Console.WriteLine();
+
+            Instancia instancia = null;
+            if (algoritmo is MergeSort)
+            {
+                instancia = new InstanciaMergeSort(instanciaBase.Numeros);
+            }
+            else if (algoritmo is QuickSort)
+            {
+                instancia = new InstanciaQuickSort(instanciaBase.Numeros);
+            }
+
+            Console.WriteLine("Resolviendo...");
+            Solucion solucion = algoritmo.ResolverConTiempo(instancia);
+
+            Console.WriteLine();
+            Console.WriteLine($"SOLUCIÓN OBTENIDA (Tiempo: {algoritmo.TiempoEjecucion}ms)");
+            Console.WriteLine("─────────────────────────────────────────────────────");
+            Console.WriteLine(solucion.ToString());
+            Console.WriteLine();
+            Console.WriteLine($"Información del Algoritmo:");
+            Console.WriteLine(algoritmo.ObtenerInfo());
+            Console.WriteLine();
+
+            if (solucion.EsValida)
+            {
+                Console.WriteLine("✓ La solución es VÁLIDA (array ordenado correctamente)");
+            }
+            else
+            {
+                Console.WriteLine("✗ La solución es INVÁLIDA");
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Presione cualquier tecla para continuar...");
+            Console.ReadKey();
         }
     }
 }
