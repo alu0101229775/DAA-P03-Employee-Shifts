@@ -9,7 +9,7 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
     /// <summary>
     /// Algoritmo de Divide y Vencerás para planificación de empleados.
     /// 
-    /// - Caso base: 1 día (resuelto con algoritmo voraz OPTIMIZADO que respeta descansos)
+    /// - Caso base: 1 día (con algoritmo voraz)
     /// - División: Divide los días en dos mitades
     /// - Conquista: Resuelve recursivamente cada mitad
     /// - Combinación: Mezcla las soluciones + BÚSQUEDA LOCAL (2-opt) para optimizar
@@ -20,8 +20,12 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
     /// </summary>
     public class PlanificacionDivideYVenceras : AlgoritmoDyV
     {
-        // Variable para almacenar la instancia durante resolución (necesaria para búsqueda local)
         private InstanciaPlanificacion _instanciaActual;
+
+        /// <summary>
+        /// Constructor del algoritmo de planificación por Divide y Vencerás.
+        /// Inicializa el nombre del algoritmo.
+        /// </summary>
         public PlanificacionDivideYVenceras()
         {
             Nombre = "Planificación Empleados D&C";
@@ -54,7 +58,6 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
             double satisfaccionTotal = 0;
             int turnosCubiertos = 0;
 
-            // Voraz mejorado: considera satisfacción Y restricciones de descanso
             for (int d = 0; d < inst.NumDias; d++)
             {
                 var empleadosQueTrabajanHoy = new HashSet<int>();
@@ -63,7 +66,6 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
                 {
                     int coberturaMínima = inst.CoberturaMínima[d, t];
 
-                    // Obtener empleados válidos: no asignados hoy y con días de descanso disponibles
                     var empleadosValidos = new List<(int id, double sat, int diasDescansoRestantes)>();
                     for (int e = 0; e < inst.NumEmpleados; e++)
                     {
@@ -75,13 +77,11 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
                         }
                     }
 
-                    // Ordenar: primero por satisfacción, luego por días de descanso pendientes
                     empleadosValidos = empleadosValidos
                         .OrderByDescending(x => x.sat)
                         .ThenByDescending(x => x.diasDescansoRestantes)
                         .ToList();
 
-                    // Asignar los mejores empleados hasta cubrir el mínimo
                     int asignados = 0;
                     for (int i = 0; i < empleadosValidos.Count && asignados < coberturaMínima; i++)
                     {
@@ -207,9 +207,8 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
                                         double mejora_potencial = CalcularMejoraIntercambio(
                                             sol, emp1, emp2, d1, t1, d2, t2);
 
-                                        if (mejora_potencial > 0.001) // Umbral mínimo
+                                        if (mejora_potencial > 0.001) // Umbral 
                                         {
-                                            // Realizar intercambio
                                             sol.Plan[d1][t1][i] = emp2;
                                             sol.Plan[d2][t2][j] = emp1;
                                             mejora = true;
@@ -233,11 +232,9 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
         {
             if (_instanciaActual == null) return 0;
 
-            // Satisfacción actual:
             double satAntes = _instanciaActual.Satisfaccion[emp1, d1, t1] +
                               _instanciaActual.Satisfaccion[emp2, d2, t2];
 
-            // Satisfacción después de intercambiar:
             double satDespues = _instanciaActual.Satisfaccion[emp2, d1, t1] +
                                 _instanciaActual.Satisfaccion[emp1, d2, t2];
 

@@ -149,11 +149,8 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
             var empleados = instancia.ObtenerNombresEmpleados();
             var sb = new StringBuilder();
 
-            // Ancho de columna dinámico según número de turnos y longitud de nombres
             int maxNombreTurno = instancia.Turnos.Count > 0 ? instancia.Turnos.Max(s => s.Length) : 2;
-            // Celda de asignación: todos muestran nombre o "*", separados por " - "
             int anchoCeldaAsig = maxNombreTurno * NumTurnos + 3 * (NumTurnos - 1);
-            // Celda de cobertura: "NN/NN" por turno, separados por " - "
             int anchoCeldaCob = 5 * NumTurnos + 3 * (NumTurnos - 1);
             int anchoCelda = Math.Max(Math.Max(anchoCeldaAsig, anchoCeldaCob),
                                       $"Day {NumDias - 1} |".Length) + 2;
@@ -173,7 +170,6 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
 
                 for (int d = 0; d < NumDias; d++)
                 {
-                    // Mostrar TODOS los turnos asignados al empleado ese día
                     var partes = new string[NumTurnos];
                     for (int t = 0; t < NumTurnos; t++)
                         partes[t] = Plan[d][t].Contains(e) ? instancia.Turnos[t] : "*";
@@ -247,12 +243,10 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
 
             var combinada = new SolucionPlanificacion(NumDias + otra.NumDias, NumTurnos, NumEmpleados);
 
-            // Copiar la primera solución
             for (int d = 0; d < NumDias; d++)
                 for (int t = 0; t < NumTurnos; t++)
                     combinada.Plan[d][t] = new List<int>(Plan[d][t]);
 
-            // Copiar la segunda solución con offset
             for (int d = 0; d < otra.NumDias; d++)
                 for (int t = 0; t < NumTurnos; t++)
                     combinada.Plan[NumDias + d][t] = new List<int>(otra.Plan[d][t]);
