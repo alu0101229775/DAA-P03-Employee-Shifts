@@ -30,6 +30,17 @@ namespace DAA_P03
             MostrarMenuPrincipal();
         }
 
+        static int[] GenerarArrayAleatorio(int tamaño, int seed)
+        {
+            Random random = new Random(seed);
+            int[] array = new int[tamaño];
+            for (int i = 0; i < tamaño; i++)
+            {
+                array[i] = random.Next(1000000);
+            }
+            return array;
+        }
+
         static void MostrarMenuPrincipal()
         {
             while (true)
@@ -155,13 +166,13 @@ namespace DAA_P03
 
                 for (int rep = 0; rep < repeticiones; rep++)
                 {
-                    var instanciaBase = new InstanciaOrdenamiento(tamaño, tamaño + rep);
+                    int[] arrayBase = GenerarArrayAleatorio(tamaño, tamaño + rep);
 
-                    var instanciaMerge = new InstanciaMergeSort(instanciaBase.Numeros);
+                    var instanciaMerge = new InstanciaMergeSort(arrayBase);
                     mergeSort.ResolverConTiempo(instanciaMerge);
                     sumaTiemposMerge += mergeSort.TiempoEjecucion;
 
-                    var instanciaQuick = new InstanciaQuickSort((int[])instanciaBase.Numeros.Clone());
+                    var instanciaQuick = new InstanciaQuickSort((int[])arrayBase.Clone());
                     quickSort.ResolverConTiempo(instanciaQuick);
                     sumaTiemposQuick += quickSort.TiempoEjecucion;
                 }
@@ -250,16 +261,16 @@ namespace DAA_P03
 
                 for (int rep = 0; rep < repeticiones; rep++)
                 {
-                    var instanciaBase = new InstanciaOrdenamiento(tamaño, tamaño + rep);
+                    int[] arrayBase = GenerarArrayAleatorio(tamaño, tamaño + rep);
                     Instancia instancia = null;
 
                     if (algoritmo is MergeSort)
                     {
-                        instancia = new InstanciaMergeSort(instanciaBase.Numeros);
+                        instancia = new InstanciaMergeSort(arrayBase);
                     }
                     else if (algoritmo is QuickSort)
                     {
-                        instancia = new InstanciaQuickSort(instanciaBase.Numeros);
+                        instancia = new InstanciaQuickSort(arrayBase);
                     }
 
                     algoritmo.ResolverConTiempo(instancia);
@@ -341,22 +352,22 @@ namespace DAA_P03
             Console.WriteLine("═══════════════════════════════════════════════════════");
             Console.WriteLine();
 
-            var instanciaBase = new InstanciaOrdenamiento(tamaño, 42);
-
-            Console.WriteLine($"INSTANCIA GENERADA (Tamaño: {instanciaBase.Tamaño})");
-            Console.WriteLine("─────────────────────────────────────────────────────");
-            Console.WriteLine(instanciaBase.ToString());
-            Console.WriteLine();
+            int[] arrayBase = GenerarArrayAleatorio(tamaño, 42);
 
             Instancia instancia = null;
             if (algoritmo is MergeSort)
             {
-                instancia = new InstanciaMergeSort(instanciaBase.Numeros);
+                instancia = new InstanciaMergeSort(arrayBase);
             }
             else if (algoritmo is QuickSort)
             {
-                instancia = new InstanciaQuickSort(instanciaBase.Numeros);
+                instancia = new InstanciaQuickSort(arrayBase);
             }
+
+            Console.WriteLine($"INSTANCIA GENERADA (Tamaño: {instancia.Tamaño})");
+            Console.WriteLine("─────────────────────────────────────────────────────");
+            Console.WriteLine(instancia.ToString());
+            Console.WriteLine();
 
             Console.WriteLine("Resolviendo...");
             Solucion solucion = algoritmo.ResolverConTiempo(instancia);
