@@ -86,7 +86,7 @@ namespace DAA_P03.Parte2_Planificacion.Servicios
 
                             if (day < numDias && emp < empleados.Count && shift < turnos.Count)
                             {
-                                instancia.Satisfaccion[day, emp, shift] = value;
+                                instancia.Satisfaccion[emp, day, shift] = value;
                             }
                         }
                     }

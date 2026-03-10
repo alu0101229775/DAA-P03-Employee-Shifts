@@ -69,7 +69,7 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
                         // Filtrar: empleado ya tiene días de descanso suficientes O puede trabajar este turno
                         if (diasDescansoRestantes > 0 || diasDescansoEmpleados[e] >= inst.Empleados[e].DiasDescanso)
                         {
-                            empleadosValidos.Add((e, inst.Satisfaccion[d, e, t], diasDescansoRestantes));
+                            empleadosValidos.Add((e, inst.Satisfaccion[e, d, t], diasDescansoRestantes));
                         }
                     }
 
@@ -215,12 +215,12 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
             if (_instanciaActual == null) return 0;
 
             // Satisfacción actual:
-            double satAntes = _instanciaActual.Satisfaccion[d1, emp1, t1] +
-                              _instanciaActual.Satisfaccion[d2, emp2, t2];
+            double satAntes = _instanciaActual.Satisfaccion[emp1, d1, t1] +
+                              _instanciaActual.Satisfaccion[emp2, d2, t2];
 
             // Satisfacción después de intercambiar:
-            double satDespues = _instanciaActual.Satisfaccion[d1, emp2, t1] +
-                                _instanciaActual.Satisfaccion[d2, emp1, t2];
+            double satDespues = _instanciaActual.Satisfaccion[emp2, d1, t1] +
+                                _instanciaActual.Satisfaccion[emp1, d2, t2];
 
             return satDespues - satAntes;
         }
