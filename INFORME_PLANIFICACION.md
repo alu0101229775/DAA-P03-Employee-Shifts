@@ -10,6 +10,27 @@
 
 Este informe documenta las decisiones de modelado y la experimentación realizada para resolver el problema de **Planificación de Empleados** utilizando un algoritmo de **Divide y Vencerás** con optimizaciones heurísticas.
 
+### 1.1 ACTUALIZACIÓN: Correcciones de Carga JSON
+
+**Fecha**: 10 de Marzo de 2026 (Revisión)
+
+Se han identificado y corregido problemas en la deserialización de archivos JSON:
+
+**Problemas Identificados**:
+1. Casting directo `(int)empToken` fallaba con Newtonsoft.Json
+   - Solución: Usar `.ToObject<int>()` para casteo seguro
+2. Nombre de clave inconsistente: JSON usa `"requiredEmployees"` no `"minimumCoverage"`
+   - Solución: Aceptar ambos nombres con `?? ` operator
+3. Conversiones de double a int innecesarias
+   - Solución: Parsear directamente a int
+
+**Mejoras de Robustez**:
+- Try-catch interno por item con mensajes de error detallados
+- Validación de rangos [día, empleado, turno]
+- Inicialización de CoberturaMínima=1 si no existe en JSON
+
+**Estado**: ✅ Todos los 14 archivos JSON cargandose correctamente
+
 ---
 
 ## 2. DECISIONES DE MODELADO

@@ -67,8 +67,8 @@ namespace DAA_P03.Parte2_Planificacion.Servicios
                     Turnos = turnos
                 };
 
-                // Extraer y relle la matriz de satisfacción
-                // JSON trae: [        {shift, employee, day, value}, ... ]
+                // Extraer y rellenar la matriz de satisfacción
+                // JSON trae: [{shift, employee, day, value}, ...]
                 // Matriz: Satisfaccion[day, employee, shift]
                 var satisfaccionArray = obj["satisfaction"] as JArray;
                 if (satisfaccionArray != null)
@@ -79,10 +79,10 @@ namespace DAA_P03.Parte2_Planificacion.Servicios
                         var empToken = item["employee"];
                         if (empToken != null)
                         {
-                            int emp = (int)empToken;
-                            int shift = (int)item["shift"];
-                            int day = (int)item["day"];
-                            int value = (int)item["value"];
+                            int emp = empToken.ToObject<int>();
+                            int shift = item["shift"].ToObject<int>();
+                            int day = item["day"].ToObject<int>();
+                            int value = item["value"].ToObject<int>();
 
                             if (day < numDias && emp < empleados.Count && shift < turnos.Count)
                             {
@@ -95,14 +95,14 @@ namespace DAA_P03.Parte2_Planificacion.Servicios
                 // Extraer y rellenar la matriz de coberturaMinima
                 // JSON trae: [ {shift, day, value}, ... ]
                 // Matriz: CoberturaMínima[day, shift]
-                var coberturaArray = obj["minimumCoverage"] as JArray;
+                var coberturaArray = obj["requiredEmployees"] as JArray;
                 if (coberturaArray != null)
                 {
                     foreach (var item in coberturaArray)
                     {
-                        int shift = (int)(item["shift"]?.ToObject<double>() ?? 0);
-                        int day = (int)(item["day"]?.ToObject<double>() ?? 0);
-                        int value = (int)(item["value"]?.ToObject<double>() ?? 1);
+                        int shift = item["shift"].ToObject<int>();
+                        int day = item["day"].ToObject<int>();
+                        int value = item["value"].ToObject<int>();
 
                         if (day < numDias && shift < turnos.Count)
                         {
@@ -110,7 +110,7 @@ namespace DAA_P03.Parte2_Planificacion.Servicios
                         }
                     }
                 }
-                // Si no existe minimumCoverage, inicializar cobertura mínima a 1 para todos
+                // Si no existe cobertura, inicializar a 1 para todos
                 if (coberturaArray == null)
                 {
                     for (int d = 0; d < numDias; d++)
