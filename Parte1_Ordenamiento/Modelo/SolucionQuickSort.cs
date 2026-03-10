@@ -7,7 +7,7 @@ namespace DAA_P03.Parte1_Ordenamiento.Modelo
     /// <summary>
     /// Representa una solución al problema QuickSort.
     /// Mantiene una referencia al vector compartido con el rango ordenado (start-final).
-    /// Esta implementación permite modificación in-place del vector para máxima eficiencia.
+    /// Esta implementación permite modificación in-place del vector.
     /// </summary>
     public class SolucionQuickSort : Solucion
     {

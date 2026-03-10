@@ -86,7 +86,7 @@ namespace DAA_P03.Parte1_Ordenamiento.Modelo
         }
 
         /// <summary>
-        /// Imprime la instancia completa en consola (útil para depuración).
+        /// Imprime la instancia completa en consola.
         /// </summary>
         public void ImprimirInstancia()
         {
