@@ -1,8 +1,8 @@
 # PRÁCTICA 3: DIVIDE Y VENCERÁS
 
-- **Autores**: Marcos Llinares Montes y Gerard
+- **Autores**: Marcos Llinares Montes & Gerard Caramazza Vilá
 - **Asignatura**: Diseño y Análisis de Algoritmos (DAA)
-- **Fecha**: Marzo 2026
+- **Fecha**: 10 Marzo 2026
 
 ## Configuración de Versión .NET
 
