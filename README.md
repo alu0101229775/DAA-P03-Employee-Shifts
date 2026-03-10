@@ -41,7 +41,6 @@ DAA-P03-Employee-Shifts/
 │   │   └── QuickSort.cs                    # Implementación QuickSort
 │   │
 │   └── Modelo/
-│       ├── InstanciaOrdenamiento.cs        # Instancia genérica (generación)
 │       ├── InstanciaMergeSort.cs           # Instancia con vector compartido
 │       ├── InstanciaQuickSort.cs           # Instancia con vector compartido
 │       ├── SolucionMergeSort.cs            # Solución MergeSort
@@ -168,16 +167,21 @@ public abstract class AlgoritmoDyV : Algoritmo
 ### Ejemplo de Uso (PARTE 1)
 
 ```csharp
-// Generar instancia base
-var instanciaBase = new InstanciaOrdenamiento(1000, seed: 42);
+// Generar array aleatorio
+int[] arrayBase = new int[1000];
+Random random = new Random(42);
+for (int i = 0; i < arrayBase.Length; i++)
+{
+    arrayBase[i] = random.Next(1000000);
+}
 
 // Crear instancia específica para MergeSort
-var instanciaMerge = new InstanciaMergeSort(instanciaBase.Numeros);
+var instanciaMerge = new InstanciaMergeSort(arrayBase);
 var mergeSort = new MergeSort();
 Solucion solucionMerge = mergeSort.ResolverConTiempo(instanciaMerge);
 
 // Crear instancia específica para QuickSort
-var instanciaQuick = new InstanciaQuickSort(instanciaBase.Numeros);
+var instanciaQuick = new InstanciaQuickSort((int[])arrayBase.Clone());
 var quickSort = new QuickSort();
 Solucion solucionQuick = quickSort.ResolverConTiempo(instanciaQuick);
 
