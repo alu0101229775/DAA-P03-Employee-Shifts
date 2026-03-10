@@ -121,15 +121,230 @@ namespace DAA_P03
 
         static void MostrarMenuParte2()
         {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("═══════════════════════════════════════════════════════");
+                Console.WriteLine("   PARTE 2: PLANIFICACIÓN DE EMPLEADOS");
+                Console.WriteLine("═══════════════════════════════════════════════════════");
+                Console.WriteLine();
+                Console.WriteLine("Seleccione una opción:");
+                Console.WriteLine();
+                Console.WriteLine("  [1] Prueba de Carga de Instancias JSON");
+                Console.WriteLine("  [2] Ejecutar Planificación (seleccionar instancia)");
+                Console.WriteLine("  [0] Volver");
+                Console.WriteLine();
+                Console.Write("Opción: ");
+
+                string opcion = Console.ReadLine();
+
+                switch (opcion)
+                {
+                    case "1":
+                        PruebaCargarInstanciasJSON();
+                        break;
+                    case "2":
+                        EjecutarPlanificacion();
+                        break;
+                    case "0":
+                        return;
+                    default:
+                        Console.WriteLine("\nOpción inválida. Presione cualquier tecla...");
+                        Console.ReadKey();
+                        break;
+                }
+            }
+        }
+
+        static void PruebaCargarInstanciasJSON()
+        {
             Console.Clear();
             Console.WriteLine("═══════════════════════════════════════════════════════");
-            Console.WriteLine("   PARTE 2: PLANIFICACIÓN DE EMPLEADOS");
-            Console.WriteLine("═══════════════════════════════════════════════════════");
-            Console.WriteLine();
-            Console.WriteLine("Esta funcionalidad estará disponible próximamente.");
+            Console.WriteLine("  PRUEBA DE CARGA DE INSTANCIAS JSON");
+            Console.WriteLine("═══════════════════════════════════════════════════════\n");
+
+            string ejemplosDir = "Ejemplos";
+            
+            if (!Directory.Exists(ejemplosDir))
+            {
+                Console.WriteLine("❌ ERROR: No se encontró la carpeta 'Ejemplos'");
+                Console.WriteLine("Presione cualquier tecla...");
+                Console.ReadKey();
+                return;
+            }
+
+            string[] archivosJSON = Directory.GetFiles(ejemplosDir, "*.json");
+            
+            if (archivosJSON.Length == 0)
+            {
+                Console.WriteLine("❌ ERROR: No hay archivos JSON en la carpeta 'Ejemplos'");
+                Console.WriteLine("Presione cualquier tecla...");
+                Console.ReadKey();
+                return;
+            }
+
+            Console.WriteLine($"✓ Se encontraron {archivosJSON.Length} archivos JSON\n");
+
+            int exitosos = 0;
+            int errores = 0;
+
+            foreach (string ruta in archivosJSON)
+            {
+                string nombre = Path.GetFileName(ruta);
+                Console.Write($"Cargando: {nombre,55} ... ");
+
+                try
+                {
+                    // Intentar cargar la instancia
+                    InstanciaPlanificacion instancia = GestorInstanciasPlanificacion.CargarDesdeJSON(ruta);
+
+                    // Validaciones básicas
+                    if (!instancia.EsValida())
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("❌ INVÁLIDA");
+                        Console.ResetColor();
+                        errores++;
+                        continue;
+                    }
+
+                    // Mostrar información de la instancia
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("✓ OK");
+                    Console.ResetColor();
+                    
+                    Console.WriteLine($"  ├─ Días: {instancia.NumDias}  Empleados: {instancia.NumEmpleados}  Turnos: {instancia.NumTurnos}");
+                    Console.WriteLine($"  └─ Tamaño: {instancia.Tamaño}");
+
+                    // Validar matrices
+                    if (instancia.Satisfaccion == null || instancia.CoberturaMínima == null)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine($"  ⚠ ADVERTENCIA: Matrices nulas");
+                        Console.ResetColor();
+                        errores++;
+                        continue;
+                    }
+
+                    exitosos++;
+                }
+                catch (Exception ex)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"❌ ERROR");
+                    Console.ResetColor();
+                    Console.WriteLine($"  └─ {ex.Message.Substring(0, Math.Min(50, ex.Message.Length))}...");
+                    errores++;
+                }
+            }
+
+            // Resumen
+            Console.WriteLine("\n" + new string('═', 63));
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"✓ Exitosos: {exitosos}/{archivosJSON.Length}");
+            Console.ResetColor();
+            
+            if (errores > 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"❌ Errores: {errores}/{archivosJSON.Length}");
+                Console.ResetColor();
+            }
+
+            if (exitosos == archivosJSON.Length)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("\n✓ TODAS LAS INSTANCIAS CARGARON CORRECTAMENTE");
+                Console.ResetColor();
+            }
+
             Console.WriteLine();
             Console.WriteLine("Presione cualquier tecla para volver...");
             Console.ReadKey();
+        }
+
+        static void EjecutarPlanificacion()
+        {
+            Console.Clear();
+            Console.WriteLine("═══════════════════════════════════════════════════════");
+            Console.WriteLine("   EJECUTAR PLANIFICACIÓN");
+            Console.WriteLine("═══════════════════════════════════════════════════════\n");
+
+            string ejemplosDir = "Ejemplos";
+            string[] archivosJSON = Directory.GetFiles(ejemplosDir, "*.json");
+
+            if (archivosJSON.Length == 0)
+            {
+                Console.WriteLine("❌ No hay instancias disponibles");
+                Console.WriteLine("Presione cualquier tecla...");
+                Console.ReadKey();
+                return;
+            }
+
+            Console.WriteLine("Instancias disponibles:\n");
+            for (int i = 0; i < archivosJSON.Length; i++)
+            {
+                Console.WriteLine($"  [{i + 1}] {Path.GetFileName(archivosJSON[i])}");
+            }
+
+            Console.WriteLine();
+            Console.Write("Seleccione una instancia (número): ");
+            if (!int.TryParse(Console.ReadLine(), out int opcion) || opcion < 1 || opcion > archivosJSON.Length)
+            {
+                Console.WriteLine("Opción inválida.");
+                Console.WriteLine("Presione cualquier tecla...");
+                Console.ReadKey();
+                return;
+            }
+
+            string rutaSeleccionada = archivosJSON[opcion - 1];
+            Console.WriteLine($"\nCargando: {Path.GetFileName(rutaSeleccionada)}...\n");
+
+            try
+            {
+                InstanciaPlanificacion instancia = GestorInstanciasPlanificacion.CargarDesdeJSON(rutaSeleccionada);
+                
+                if (!instancia.EsValida())
+                {
+                    Console.WriteLine("❌ La instancia no es válida");
+                    Console.WriteLine("Presione cualquier tecla...");
+                    Console.ReadKey();
+                    return;
+                }
+
+                Console.WriteLine($"✓ Instancia cargada correctamente");
+                Console.WriteLine($"  Días: {instancia.NumDias}, Empleados: {instancia.NumEmpleados}, Turnos: {instancia.NumTurnos}\n");
+
+                Console.WriteLine("Ejecutando algoritmo D&C Optimizado...\n");
+                
+                var algoritmo = new PlanificacionDivideYVenceras();
+                var cronometro = Stopwatch.StartNew();
+                Solucion solucion = algoritmo.Resolver(instancia);
+                cronometro.Stop();
+
+                Console.Clear();
+                Console.WriteLine("═══════════════════════════════════════════════════════");
+                Console.WriteLine("   RESULTADO");
+                Console.WriteLine("═══════════════════════════════════════════════════════");
+
+                if (solucion is SolucionPlanificacion solPlanificacion)
+                {
+                    Console.WriteLine(solPlanificacion.ObtenerRepresentacionTabla(instancia));
+                    Console.WriteLine($"\n⏱ Tiempo de ejecución: {cronometro.ElapsedMilliseconds}ms");
+                    Console.WriteLine($"📊 Operaciones realizadas: {algoritmo.NumOperaciones}");
+                }
+
+                Console.WriteLine("\nPresione cualquier tecla para volver...");
+                Console.ReadKey();
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"❌ ERROR: {ex.Message}");
+                Console.ResetColor();
+                Console.WriteLine("\nPresione cualquier tecla...");
+                Console.ReadKey();
+            }
         }
 
         static void EjecutarModoComparativo()

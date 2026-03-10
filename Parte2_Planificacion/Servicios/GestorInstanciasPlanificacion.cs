@@ -36,7 +36,7 @@ namespace DAA_P03.Parte2_Planificacion.Servicios
                         var emp = new Empleado
                         {
                             Nombre = empToken["name"]?.ToString() ?? "",
-                            DiasDescanso = (int)(empToken["daysOff"]?.ToObject<double>() ?? 0)
+                            DiasDescanso = (int)(empToken["freeDays"]?.ToObject<double>() ?? 0)
                         };
                         empleados.Add(emp);
                     }
@@ -67,27 +67,57 @@ namespace DAA_P03.Parte2_Planificacion.Servicios
                     Turnos = turnos
                 };
 
-                // Extraer y rellenar la matriz de satisfacción
+                // Extraer y relle la matriz de satisfacción
+                // JSON trae: [        {shift, employee, day, value}, ... ]
+                // Matriz: Satisfaccion[day, employee, shift]
                 var satisfaccionArray = obj["satisfaction"] as JArray;
                 if (satisfaccionArray != null)
                 {
-                    int index = 0;
-                    int numEmpleados = empleados.Count;
-                    int numTurnos = turnos.Count;
+                    foreach (var item in satisfaccionArray)
+                    {
+                        // Verificar si este item tiene "employee" (matriz de satisfacción) o no (cobertura)
+                        var empToken = item["employee"];
+                        if (empToken != null)
+                        {
+                            int emp = (int)empToken;
+                            int shift = (int)item["shift"];
+                            int day = (int)item["day"];
+                            int value = (int)item["value"];
 
+                            if (day < numDias && emp < empleados.Count && shift < turnos.Count)
+                            {
+                                instancia.Satisfaccion[day, emp, shift] = value;
+                            }
+                        }
+                    }
+                }
+
+                // Extraer y rellenar la matriz de coberturaMinima
+                // JSON trae: [ {shift, day, value}, ... ]
+                // Matriz: CoberturaMínima[day, shift]
+                var coberturaArray = obj["minimumCoverage"] as JArray;
+                if (coberturaArray != null)
+                {
+                    foreach (var item in coberturaArray)
+                    {
+                        int shift = (int)(item["shift"]?.ToObject<double>() ?? 0);
+                        int day = (int)(item["day"]?.ToObject<double>() ?? 0);
+                        int value = (int)(item["value"]?.ToObject<double>() ?? 1);
+
+                        if (day < numDias && shift < turnos.Count)
+                        {
+                            instancia.CoberturaMínima[day, shift] = value;
+                        }
+                    }
+                }
+                // Si no existe minimumCoverage, inicializar cobertura mínima a 1 para todos
+                if (coberturaArray == null)
+                {
                     for (int d = 0; d < numDias; d++)
                     {
-                        for (int e = 0; e < numEmpleados; e++)
+                        for (int t = 0; t < turnos.Count; t++)
                         {
-                            for (int t = 0; t < numTurnos; t++)
-                            {
-                                if (index < satisfaccionArray.Count)
-                                {
-                                    double valor = satisfaccionArray[index]["value"]?.ToObject<double>() ?? 0;
-                                    instancia.Satisfaccion[d, e, t] = (int)valor;
-                                    index++;
-                                }
-                            }
+                            instancia.CoberturaMínima[d, t] = 1;
                         }
                     }
                 }
