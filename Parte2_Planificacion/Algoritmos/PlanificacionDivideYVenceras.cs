@@ -140,7 +140,6 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
 
             var solucionCombinada = sol1.Combinar(sol2) as SolucionPlanificacion;
             
-            // OPTIMIZACIÓN: Aplicar búsqueda local para mejorar la solución
             if (solucionCombinada != null)
             {
                 AplicarBúsquedaLocal(solucionCombinada);
@@ -160,7 +159,7 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
 
             bool mejora = true;
             int iteraciones = 0;
-            int maxIteraciones = sol.NumDias * sol.NumTurnos; // Límite para no ser demasiado costoso
+            int maxIteraciones = sol.NumDias * sol.NumTurnos; // Límite 
 
             while (mejora && iteraciones < maxIteraciones)
             {
