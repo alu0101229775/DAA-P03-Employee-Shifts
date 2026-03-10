@@ -19,13 +19,12 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
         public PlanificacionDivideYVenceras()
         {
             Nombre = "Planificación Empleados D&C";
-            Descripcion = "Divide y Vencerás: divide por días, resuelve con voraz, combina.";
         }
 
         /// <summary>
         /// Determina si la instancia es pequeña (1 día).
         /// </summary>
-        protected override bool EsPequenio(object instancia)
+        protected override bool EsPequenio(Instancia instancia)
         {
             var inst = instancia as InstanciaPlanificacion ??
                 throw new ArgumentException("Debe ser InstanciaPlanificacion.");
@@ -36,7 +35,7 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
         /// Resuelve el caso base (1 día) con algoritmo voraz.
         /// Para cada turno, asigna los empleados más satisfechos hasta cubrir el mínimo.
         /// </summary>
-        protected override object ResolverPequenio(object instancia)
+        protected override Solucion ResolverPequenio(Instancia instancia)
         {
             var inst = instancia as InstanciaPlanificacion ??
                 throw new ArgumentException("Debe ser InstanciaPlanificacion.");
@@ -86,7 +85,7 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
         /// <summary>
         /// Divide la instancia en dos mitades de días.
         /// </summary>
-        protected override object[] Dividir(object instancia)
+        protected override Instancia[] Dividir(Instancia instancia)
         {
             var inst = instancia as InstanciaPlanificacion ??
                 throw new ArgumentException("Debe ser InstanciaPlanificacion.");
@@ -97,17 +96,20 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
             var izq = inst.ObtenerSubinstancia(0, mitad - 1);
             var der = inst.ObtenerSubinstancia(mitad, inst.NumDias - 1);
 
-            return new object[] { izq, der };
+            return new Instancia[] { izq, der };
         }
 
         /// <summary>
-        /// Combina dos soluciones (de días consecutivos).
+        /// Combina n soluciones en una solución completa.
         /// </summary>
-        protected override object Combinar(object solucion1, object solucion2)
+        protected override Solucion Combinar(Solucion[] soluciones)
         {
-            var sol1 = solucion1 as SolucionPlanificacion ??
+            if (soluciones == null || soluciones.Length != 2)
+                throw new ArgumentException("Se esperan exactamente 2 soluciones.");
+            
+            var sol1 = soluciones[0] as SolucionPlanificacion ??
                 throw new ArgumentException("Solución 1 debe ser SolucionPlanificacion.");
-            var sol2 = solucion2 as SolucionPlanificacion ??
+            var sol2 = soluciones[1] as SolucionPlanificacion ??
                 throw new ArgumentException("Solución 2 debe ser SolucionPlanificacion.");
 
             NumOperaciones++;
@@ -118,7 +120,7 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
         /// <summary>
         /// Resuelve una instancia de planificación.
         /// </summary>
-        public override object Resolver(object instancia)
+        public override Solucion Resolver(Instancia instancia)
         {
             NumOperaciones = 0;
             var inst = instancia as InstanciaPlanificacion;
@@ -128,7 +130,22 @@ namespace DAA_P03.Parte2_Planificacion.Algoritmos
             if (!inst.EsValida())
                 throw new InvalidOperationException("Instancia inválida.");
 
-            return base.Resolver(instancia);
+            return ResolverDivideYVenceras(instancia);
+        }
+
+        protected override string GetNumberOfSubproblems()
+        {
+            return "2";
+        }
+
+        protected override string GetSubproblemSizeDivisor()
+        {
+            return "n/2";
+        }
+
+        protected override string GetCombineCost()
+        {
+            return "n";
         }
     }
 }
