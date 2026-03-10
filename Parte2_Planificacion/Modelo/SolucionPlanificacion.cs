@@ -13,28 +13,15 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
     /// </summary>
     public class SolucionPlanificacion : Solucion
     {
-        /// <summary>
-        /// Plan de asignación: plan[día][turno] = lista de índices de empleados.
-        /// </summary>
         public List<int>[][] Plan { get; set; }
-
         public int NumDias { get; private set; }
         public int NumTurnos { get; private set; }
         public int NumEmpleados { get; private set; }
 
-        /// <summary>
-        /// Suma total de satisfacción de los empleados.
-        /// </summary>
         public double SatisfaccionTotal { get; set; }
 
-        /// <summary>
-        /// Número de turnos que cumplen la cobertura mínima.
-        /// </summary>
         public int TurnosCubiertos { get; set; }
 
-        /// <summary>
-        /// Función objetivo: f(x) = SUMA(satisfaccion) + SUMA(turnos_cubiertos) * 100
-        /// </summary>
         public double FuncionObjetivo { get; set; }
 
         /// <summary>
@@ -78,6 +65,12 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Constructor de la solución de planificación.
+        /// </summary>
+        /// <param name="numDias">Número de días del horizonte de planificación.</param>
+        /// <param name="numTurnos">Número de turnos por día.</param>
+        /// <param name="numEmpleados">Número total de empleados disponibles.</param>
         public SolucionPlanificacion(int numDias, int numTurnos, int numEmpleados)
         {
             NumDias = numDias;
@@ -102,6 +95,10 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
         /// <summary>
         /// Asigna un empleado a un turno específico.
         /// </summary>
+        /// <param name="dia">Índice del día (0-based).</param>
+        /// <param name="turno">Índice del turno (0-based).</param>
+        /// <param name="empleado">Índice del empleado (0-based).</param>
+        /// <exception cref="ArgumentException">Si alguno de los índices está fuera de rango.</exception>
         public void AsignarEmpleado(int dia, int turno, int empleado)
         {
             if (dia < 0 || dia >= NumDias || turno < 0 || turno >= NumTurnos 
@@ -115,6 +112,9 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
         /// <summary>
         /// Obtiene los empleados asignados a un turno.
         /// </summary>
+        /// <param name="dia">Índice del día (0-based).</param>
+        /// <param name="turno">Índice del turno (0-based).</param>
+        /// <returns>Lista de índices de empleados asignados al turno especificado.</returns>
         public List<int> ObtenerEmpleadosDelTurno(int dia, int turno)
         {
             return new List<int>(Plan[dia][turno]);
@@ -123,6 +123,8 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
         /// <summary>
         /// Calcula los días de descanso de un empleado.
         /// </summary>
+        /// <param name="empleado">Índice del empleado (0-based).</param>
+        /// <returns>Número de días en los que el empleado no tiene turnos asignados.</returns>
         public int ObtenerDiasDescanso(int empleado)
         {
             var diasTrabajo = new HashSet<int>();
@@ -140,6 +142,8 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
         /// <summary>
         /// Representa la solución en forma de tabla legible.
         /// </summary>
+        /// <param name="instancia">Instancia de planificación con la información de empleados y turnos.</param>
+        /// <returns>Representación textual de la solución con tablas de asignaciones, cobertura e indicadores.</returns>
         public string ObtenerRepresentacionTabla(InstanciaPlanificacion instancia)
         {
             var empleados = instancia.ObtenerNombresEmpleados();
@@ -233,6 +237,9 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
         /// <summary>
         /// Combina dos soluciones (de días consecutivos).
         /// </summary>
+        /// <param name="otra">Solución a combinar con la actual.</param>
+        /// <returns>Nueva solución que incluye los días de ambas soluciones.</returns>
+        /// <exception cref="ArgumentNullException">Si la solución a combinar es null.</exception>
         public SolucionPlanificacion Combinar(SolucionPlanificacion otra)
         {
             if (otra == null)
@@ -258,6 +265,10 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
             return combinada;
         }
 
+        /// <summary>
+        /// Devuelve una representación en cadena de la solución con sus métricas principales.
+        /// </summary>
+        /// <returns>Cadena con la satisfacción total, turnos cubiertos y función objetivo.</returns>
         public override string ToString()
         {
             return $"Solución: Satisfacción={SatisfaccionTotal}, Cubiertos={TurnosCubiertos}, " +

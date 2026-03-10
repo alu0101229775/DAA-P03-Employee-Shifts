@@ -12,42 +12,18 @@ namespace DAA_P03.Parte2_Planificacion.Modelo
     /// </summary>
     public class InstanciaPlanificacion : Instancia
     {
-        /// <summary>
-        /// Lista de empleados con sus propiedades (nombre, días de descanso).
-        /// </summary>
         [JsonProperty("employees")]
         public List<Empleado> Empleados { get; set; } = new List<Empleado>();
-
-        /// <summary>
-        /// Número de días a planificar (horizonte de planificación).
-        /// </summary>
         [JsonProperty("planningHorizon")]
         public int NumDias { get; set; }
-
-        /// <summary>
-        /// Lista de turnos disponibles.
-        /// </summary>
         [JsonProperty("shifts")]
         public List<string> Turnos { get; set; } = new List<string>();
-
-        /// <summary>
-        /// Matriz de satisfacción: Satisfaccion[e][d][t] = satisfacción del empleado e, día d, turno t.
-        /// </summary>
         [JsonIgnore]
         public int[,,] Satisfaccion { get; set; }
-
-        /// <summary>
-        /// Matriz de cobertura mínima: CoberturaMínima[d][t] = mínimo de empleados para día d, turno t.
-        /// </summary>
         [JsonIgnore]
         public int[,] CoberturaMínima { get; set; }
-
-        public int NumEmpleados => Empleados?.Count ?? 0;
         public int NumTurnos => Turnos?.Count ?? 0;
-
-        /// <summary>
-        /// Implementa Tamaño como el producto de empleados × días × turnos (complejidad de la instancia).
-        /// </summary>
+        public int NumEmpleados => Empleados?.Count ?? 0;
         public override int Tamaño => NumEmpleados * NumDias * NumTurnos;
 
         /// <summary>
