@@ -107,17 +107,16 @@ namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
         }
 
         /// <summary>
-        /// Combina dos soluciones.
+        /// Combina soluciones.
         /// En QuickSort con particionamiento in-place, los subarrays ya están ordenados
         /// en sus posiciones finales, por lo que no se necesita combinar.
         /// </summary>
-        /// <param name="solucion1">Primera solución parcial.</param>
-        /// <param name="solucion2">Segunda solución parcial.</param>
+        /// <param name="soluciones">Array de soluciones parciales.</param>
         /// <returns>La solución (el vector ya está completamente ordenado).</returns>
-        protected override Solucion Combinar(Solucion solucion1, Solucion solucion2)
+        protected override Solucion Combinar(Solucion[] soluciones)
         {
-            SolucionQuickSort sol1 = (SolucionQuickSort)solucion1;
-            SolucionQuickSort sol2 = (SolucionQuickSort)solucion2;
+            SolucionQuickSort sol1 = (SolucionQuickSort)soluciones[0];
+            SolucionQuickSort sol2 = (SolucionQuickSort)soluciones[1];
 
             NumOperaciones++;
             
@@ -150,7 +149,14 @@ namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
         {
             return base.ObtenerInfo() + 
                    $"\nComparaciones: {_comparaciones}\n" +
-                   $"Intercambios: {_intercambios}";
+                   $"Intercambios: {_intercambios}\n" +
+                   $"Ecuación de recurrencia: {GetRecurrenceEquation()}\n" +
+                   $"Profundidad máxima de recursión: {GetMaxRecursiveDepth()}\n" +
+                   $"Total de llamadas recursivas: {GetTotalRecursiveCalls()}";
         }
+
+        protected override string GetNumberOfSubproblems() { return "2"; }
+        protected override string GetSubproblemSizeDivisor() { return "n/2"; }
+        protected override string GetCombineCost() { return "1"; }
     }
 }

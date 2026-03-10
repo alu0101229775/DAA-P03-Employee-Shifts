@@ -82,16 +82,15 @@ namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
         }
 
         /// <summary>
-        /// Combina dos soluciones ordenadas en una única solución ordenada.
+        /// Combina soluciones ordenadas en una única solución ordenada.
         /// Mezcla los elementos in-place sobre el vector compartido para máxima eficiencia O(n).
         /// </summary>
-        /// <param name="solucion1">Primera mitad ordenada (SolucionMergeSort).</param>
-        /// <param name="solucion2">Segunda mitad ordenada (SolucionMergeSort).</param>
+        /// <param name="soluciones">Array de soluciones parciales ordenadas.</param>
         /// <returns>Una solución con el rango completo ordenado en el vector compartido.</returns>
-        protected override Solucion Combinar(Solucion solucion1, Solucion solucion2)
+        protected override Solucion Combinar(Solucion[] soluciones)
         {
-            SolucionMergeSort solution1 = (SolucionMergeSort)solucion1;
-            SolucionMergeSort solution2 = (SolucionMergeSort)solucion2;
+            SolucionMergeSort solution1 = (SolucionMergeSort)soluciones[0];
+            SolucionMergeSort solution2 = (SolucionMergeSort)soluciones[1];
 
             int[] vector = solution1.Vector;
             int start1 = solution1.Start;
@@ -160,7 +159,14 @@ namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
         {
             return base.ObtenerInfo() + 
                    $"\nComparaciones: {_comparaciones}\n" +
-                   $"Movimientos: {_movimientos}";
+                   $"Movimientos: {_movimientos}\n" +
+                   $"Ecuación de recurrencia: {GetRecurrenceEquation()}\n" +
+                   $"Profundidad máxima de recursión: {GetMaxRecursiveDepth()}\n" +
+                   $"Total de llamadas recursivas: {GetTotalRecursiveCalls()}";
         }
+
+        protected override string GetNumberOfSubproblems() { return "2"; }
+        protected override string GetSubproblemSizeDivisor() { return "n/2"; }
+        protected override string GetCombineCost() { return "n"; }
     }
 }
