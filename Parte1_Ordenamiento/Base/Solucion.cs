@@ -8,21 +8,10 @@ namespace DAA_P03.Parte1_Ordenamiento.Base
     /// </summary>
     public abstract class Solucion
     {
-        /// <summary>
-        /// Indica si la solución es válida.
-        /// </summary>
         public abstract bool EsValida { get; }
 
-        /// <summary>
-        /// Obtiene información detallada de la solución.
-        /// </summary>
-        /// <returns>Información formateada de la solución.</returns>
         public abstract string ObtenerInfo();
 
-        /// <summary>
-        /// Obtiene una representación en string de la solución.
-        /// </summary>
-        /// <returns>Representación formateada de la solución.</returns>
         public abstract override string ToString();
     }
 }

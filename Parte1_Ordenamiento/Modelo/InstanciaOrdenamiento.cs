@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using DAA_P03.Parte1_Ordenamiento.Base;
 
 namespace DAA_P03.Parte1_Ordenamiento.Modelo
 {
@@ -7,7 +8,7 @@ namespace DAA_P03.Parte1_Ordenamiento.Modelo
     /// Representa una instancia de un problema de ordenamiento.
     /// Contiene un array de números enteros a ser ordenados.
     /// </summary>
-    public class InstanciaOrdenamiento
+    public class InstanciaOrdenamiento : Instancia
     {
         /// <summary>
         /// El array de números a ordenar.
@@ -17,7 +18,7 @@ namespace DAA_P03.Parte1_Ordenamiento.Modelo
         /// <summary>
         /// Tamaño del array.
         /// </summary>
-        public int Tamaño => Numeros?.Length ?? 0;
+        public override int Tamaño => Numeros?.Length ?? 0;
 
         /// <summary>
         /// Constructor que inicializa la instancia con un array específico.
@@ -52,7 +53,7 @@ namespace DAA_P03.Parte1_Ordenamiento.Modelo
         /// Obtiene una copia de la instancia.
         /// </summary>
         /// <returns>Una nueva instancia con los mismos datos.</returns>
-        public InstanciaOrdenamiento ObtenerCopia()
+        public override Instancia ObtenerCopia()
         {
             return new InstanciaOrdenamiento((int[])Numeros.Clone());
         }

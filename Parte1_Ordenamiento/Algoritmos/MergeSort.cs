@@ -6,23 +6,18 @@ namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
 {
     /// <summary>
     /// Implementación del algoritmo MergeSort utilizando la plantilla Divide y Vencerás.
-    /// MergeSort es un algoritmo de ordenamiento estable bastante eficiente con complejidad O(n log n).
-    /// Implementa todos los métodos abstractos definidos en AlgoritmoDyV.
+    /// Usa un vector compartido con rangos (start-final) para máxima eficiencia en memoria.
+    /// MergeSort es un algoritmo de ordenamiento estable con complejidad O(n log n).
     /// </summary>
     public class MergeSort : AlgoritmoDyV
     {
-        /// <summary>
-        /// Umbral para cambiar a ordenamiento por región pequeña.
-        /// </summary>
-        private const int UMBRAL_PEQUENIO = 1;
-
         /// <summary>
         /// Número de comparaciones realizadas.
         /// </summary>
         private long _comparaciones;
 
         /// <summary>
-        /// Número de intercambios (en MergeSort es el movimiento de elementos).
+        /// Número de movimientos de elementos.
         /// </summary>
         private long _movimientos;
 
@@ -32,117 +27,124 @@ namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
         public MergeSort()
         {
             Nombre = "MergeSort";
-            Descripcion = "Algoritmo de ordenamiento basado en Divide y Vencerás. " +
-                         "Divide el array en mitades, ordena recursivamente cada mitad y luego mezcla.";
+            Descripcion = "Algoritmo de ordenamiento estable basado en Divide y Vencerás. " +
+                         "Divide el array en mitades, ordena recursivamente cada mitad y luego mezcla ordenadamente.";
             _comparaciones = 0;
             _movimientos = 0;
         }
 
         /// <summary>
-        /// Determina si el array es lo suficientemente pequeño para ser ordenado directamente.
-        /// En MergeSort, es pequeño cuando tiene 1 o 0 elementos.
+        /// Determina si el rango es lo suficientemente pequeño.
+        /// En MergeSort, es pequeño cuando start == final (exactamente 1 elemento).
         /// </summary>
-        /// <param name="instancia">La instancia a evaluar (InstanciaOrdenamiento).</param>
-        /// <returns>true si el tamaño es <= UMBRAL_PEQUENIO.</returns>
-        protected override bool EsPequenio(object instancia)
+        /// <param name="instancia">La instancia a evaluar (InstanciaMergeSort).</param>
+        /// <returns>true si el rango tiene exactamente 1 elemento.</returns>
+        protected override bool EsPequenio(Instancia instancia)
         {
-            InstanciaOrdenamiento instance = instancia as InstanciaOrdenamiento ??
-                throw new ArgumentException("La instancia debe ser de tipo InstanciaOrdenamiento.");
-            return instance.Tamaño <= UMBRAL_PEQUENIO;
+            InstanciaMergeSort mergeSortProblem = (InstanciaMergeSort)instancia;
+            return mergeSortProblem.Start == mergeSortProblem.Final;
         }
 
         /// <summary>
-        /// Resuelve el problema cuando el array es pequeño.
-        /// Para un array de 0 o 1 elementos, ya está "ordenado".
+        /// Resuelve el problema cuando el rango es pequeño (1 elemento).
+        /// Un solo elemento ya está ordenado por definición.
         /// </summary>
-        /// <param name="instancia">El array pequeño (InstanciaOrdenamiento).</param>
-        /// <returns>Una solución con el array ya ordenado.</returns>
-        protected override object ResolverPequenio(object instancia)
+        /// <param name="instancia">El problema pequeño (InstanciaMergeSort).</param>
+        /// <returns>Una solución con el elemento ya ordenado.</returns>
+        protected override Solucion ResolverPequenio(Instancia instancia)
         {
-            InstanciaOrdenamiento instance = instancia as InstanciaOrdenamiento ??
-                throw new ArgumentException("La instancia debe ser de tipo InstanciaOrdenamiento.");
-
+            InstanciaMergeSort mergeSortProblem = (InstanciaMergeSort)instancia;
             NumOperaciones++;
-            return new SolucionOrdenamiento(instance.Numeros, _comparaciones, _movimientos);
+            
+            return new SolucionMergeSort(
+                mergeSortProblem.Start,
+                mergeSortProblem.Final,
+                mergeSortProblem.Middle,
+                mergeSortProblem.Vector
+            );
         }
 
         /// <summary>
-        /// Divide el array en dos mitades.
+        /// Divide el rango en dos mitades.
+        /// Crea dos subproblemas sobre el MISMO vector con rangos [start, middle] y [middle+1, final].
         /// </summary>
-        /// <param name="instancia">El array a dividir (InstanciaOrdenamiento).</param>
-        /// <returns>Array con dos SubInstances (mitad izquierda y derecha).</returns>
-        protected override object[] Dividir(object instancia)
+        /// <param name="instancia">El problema a dividir (InstanciaMergeSort).</param>
+        /// <returns>Array con dos subproblemas que trabajan en rangos disjuntos.</returns>
+        protected override Instancia[] Dividir(Instancia instancia)
         {
-            InstanciaOrdenamiento instance = instancia as InstanciaOrdenamiento ??
-                throw new ArgumentException("La instancia debe ser de tipo InstanciaOrdenamiento.");
+            InstanciaMergeSort mergeSortProblem = (InstanciaMergeSort)instancia;
+            int[] vector = mergeSortProblem.Vector;
+            
+            int start1 = mergeSortProblem.Start;
+            int final1 = mergeSortProblem.Middle;
+            int middle1 = (start1 + final1) / 2;
+            InstanciaMergeSort subproblem1 = new InstanciaMergeSort(start1, final1, middle1, vector);
 
-            int mitad = instance.Tamaño / 2;
-            int[] izquierda = new int[mitad];
-            int[] derecha = new int[instance.Tamaño - mitad];
-
-            Array.Copy(instance.Numeros, 0, izquierda, 0, mitad);
-            Array.Copy(instance.Numeros, mitad, derecha, 0, instance.Tamaño - mitad);
+            int start2 = mergeSortProblem.Middle + 1;
+            int final2 = mergeSortProblem.Final;
+            int middle2 = (start2 + final2) / 2;
+            InstanciaMergeSort subproblem2 = new InstanciaMergeSort(start2, final2, middle2, vector);
 
             NumOperaciones++;
 
-            return new object[]
-            {
-                new InstanciaOrdenamiento(izquierda),
-                new InstanciaOrdenamiento(derecha)
-            };
+            return new Instancia[] { subproblem1, subproblem2 };
         }
 
         /// <summary>
         /// Combina dos soluciones ordenadas en una única solución ordenada.
-        /// Realiza el proceso de mezcla típico de MergeSort.
+        /// Mezcla los elementos in-place sobre el vector compartido para máxima eficiencia O(n).
         /// </summary>
-        /// <param name="solucion1">Primera mitad ordenada (SolucionOrdenamiento).</param>
-        /// <param name="solucion2">Segunda mitad ordenada (SolucionOrdenamiento).</param>
-        /// <returns>Una nueva solución con los elementos combinados y ordenados.</returns>
-        protected override object Combinar(object solucion1, object solucion2)
+        /// <param name="solucion1">Primera mitad ordenada (SolucionMergeSort).</param>
+        /// <param name="solucion2">Segunda mitad ordenada (SolucionMergeSort).</param>
+        /// <returns>Una solución con el rango completo ordenado en el vector compartido.</returns>
+        protected override Solucion Combinar(Solucion solucion1, Solucion solucion2)
         {
-            SolucionOrdenamiento sol1 = solucion1 as SolucionOrdenamiento ??
-                throw new ArgumentException("Solución 1 debe ser de tipo SolucionOrdenamiento.");
-            SolucionOrdenamiento sol2 = solucion2 as SolucionOrdenamiento ??
-                throw new ArgumentException("Solución 2 debe ser de tipo SolucionOrdenamiento.");
+            SolucionMergeSort solution1 = (SolucionMergeSort)solucion1;
+            SolucionMergeSort solution2 = (SolucionMergeSort)solucion2;
 
-            int[] arr1 = sol1.NumerosOrdenados;
-            int[] arr2 = sol2.NumerosOrdenados;
-            int[] resultado = new int[arr1.Length + arr2.Length];
+            int[] vector = solution1.Vector;
+            int start1 = solution1.Start;
+            int final1 = solution1.Final;
+            int start2 = solution2.Start;
+            int final2 = solution2.Final;
 
-            int i = 0, j = 0, k = 0;
+            int[] result = new int[final2 - start1 + 1];
+            int i = start1, j = start2, k = 0;
 
-            // Mezcla de dos arrays ordenados
-            while (i < arr1.Length && j < arr2.Length)
+            while (i <= final1 && j <= final2)
             {
                 _comparaciones++;
-                if (arr1[i] <= arr2[j])
+                if (vector[i] <= vector[j])
                 {
-                    resultado[k++] = arr1[i++];
+                    result[k++] = vector[i++];
                 }
                 else
                 {
-                    resultado[k++] = arr2[j++];
+                    result[k++] = vector[j++];
                 }
                 _movimientos++;
             }
 
-            // Copia los elementos restantes
-            while (i < arr1.Length)
+            while (i <= final1)
             {
-                resultado[k++] = arr1[i++];
+                result[k++] = vector[i++];
                 _movimientos++;
             }
 
-            while (j < arr2.Length)
+            while (j <= final2)
             {
-                resultado[k++] = arr2[j++];
+                result[k++] = vector[j++];
                 _movimientos++;
+            }
+
+            for (int l = 0; l < result.Length; l++)
+            {
+                vector[start1 + l] = result[l];
             }
 
             NumOperaciones++;
 
-            return new SolucionOrdenamiento(resultado, _comparaciones, _movimientos);
+            return new SolucionMergeSort(start1, final2, (start1 + final2) / 2, vector);
         }
 
         /// <summary>
@@ -151,7 +153,7 @@ namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
         /// </summary>
         /// <param name="instancia">La instancia a ordenar.</param>
         /// <returns>La solución ordenada.</returns>
-        public override object Resolver(object instancia)
+        public override Solucion Resolver(Instancia instancia)
         {
             _comparaciones = 0;
             _movimientos = 0;

@@ -39,11 +39,9 @@ namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
         /// </summary>
         /// <param name="instancia">La instancia a evaluar (InstanciaQuickSort).</param>
         /// <returns>true si el rango tiene 0 o 1 elementos.</returns>
-        protected override bool EsPequenio(object instancia)
+        protected override bool EsPequenio(Instancia instancia)
         {
-            InstanciaQuickSort quickSortProblem = instancia as InstanciaQuickSort ??
-                throw new ArgumentException("La instancia debe ser de tipo InstanciaQuickSort.");
-            
+            InstanciaQuickSort quickSortProblem = (InstanciaQuickSort)instancia;
             return quickSortProblem.Start >= quickSortProblem.Final;
         }
 
@@ -53,13 +51,15 @@ namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
         /// </summary>
         /// <param name="instancia">El problema pequeño (InstanciaQuickSort).</param>
         /// <returns>Una solución con el vector ya ordenado en ese rango.</returns>
-        protected override object ResolverPequenio(object instancia)
+        protected override Solucion ResolverPequenio(Instancia instancia)
         {
-            InstanciaQuickSort quickSortProblem = instancia as InstanciaQuickSort ??
-                throw new ArgumentException("La instancia debe ser de tipo InstanciaQuickSort.");
-
+            InstanciaQuickSort quickSortProblem = (InstanciaQuickSort)instancia;
             NumOperaciones++;
-            return new SolucionOrdenamiento(quickSortProblem.Vector, _comparaciones, _intercambios);
+            return new SolucionQuickSort(
+                quickSortProblem.Start,
+                quickSortProblem.Final,
+                quickSortProblem.Vector
+            );
         }
 
         /// <summary>
@@ -69,17 +69,14 @@ namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
         /// </summary>
         /// <param name="instancia">El problema a particionar (InstanciaQuickSort).</param>
         /// <returns>Array con dos subproblemas que trabajan en rangos disjuntos.</returns>
-        protected override object[] Dividir(object instancia)
+        protected override Instancia[] Dividir(Instancia instancia)
         {
-            InstanciaQuickSort quickSortProblem = instancia as InstanciaQuickSort ??
-                throw new ArgumentException("La instancia debe ser de tipo InstanciaQuickSort.");
-
+            InstanciaQuickSort quickSortProblem = (InstanciaQuickSort)instancia;
             int[] vector = quickSortProblem.Vector;
             int start = quickSortProblem.Start;
             int final = quickSortProblem.Final;
             int pivot = quickSortProblem.Pivot;
 
-            // Particionamiento in-place usando dos punteros
             int i = start;
             int f = final;
             int p = vector[pivot];
@@ -96,11 +93,10 @@ namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
                     f--;
                     _comparaciones++;
                 }
-                _comparaciones += 2; // Contamos las comparaciones finales del while
+                _comparaciones += 2;
 
                 if (i <= f)
                 {
-                    // Intercambiar vector[i] y vector[f]
                     int temp = vector[i];
                     vector[i] = vector[f];
                     vector[f] = temp;
@@ -113,11 +109,10 @@ namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
 
             NumOperaciones++;
 
-            // Crear dos subproblemas con rangos disjuntos sobre el mismo vector
             InstanciaQuickSort leftProblem = new InstanciaQuickSort(start, f, (start + f) / 2, vector);
             InstanciaQuickSort rightProblem = new InstanciaQuickSort(i, final, (i + final) / 2, vector);
 
-            return new object[] { leftProblem, rightProblem };
+            return new Instancia[] { leftProblem, rightProblem };
         }
 
         /// <summary>
@@ -128,12 +123,18 @@ namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
         /// <param name="solucion1">Primera solución parcial.</param>
         /// <param name="solucion2">Segunda solución parcial.</param>
         /// <returns>La solución (el vector ya está completamente ordenado).</returns>
-        protected override object Combinar(object solucion1, object solucion2)
+        protected override Solucion Combinar(Solucion solucion1, Solucion solucion2)
         {
-            // En QuickSort los subarrays ya están en sus posiciones correctas.
-            // Simplemente devolvemos la primera solución (ambas comparten el mismo vector).
+            SolucionQuickSort sol1 = (SolucionQuickSort)solucion1;
+            SolucionQuickSort sol2 = (SolucionQuickSort)solucion2;
+
             NumOperaciones++;
-            return solucion1;
+            
+            return new SolucionQuickSort(
+                sol1.Start,
+                sol2.Final,
+                sol1.Vector
+            );
         }
 
         /// <summary>
@@ -142,7 +143,7 @@ namespace DAA_P03.Parte1_Ordenamiento.Algoritmos
         /// </summary>
         /// <param name="instancia">La instancia a ordenar.</param>
         /// <returns>La solución ordenada.</returns>
-        public override object Resolver(object instancia)
+        public override Solucion Resolver(Instancia instancia)
         {
             _comparaciones = 0;
             _intercambios = 0;

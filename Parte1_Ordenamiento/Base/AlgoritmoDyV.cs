@@ -37,7 +37,7 @@ namespace DAA_P03.Parte1_Ordenamiento.Base
         /// </summary>
         /// <param name="instancia">La instancia a evaluar.</param>
         /// <returns>true si es pequeña, false en caso contrario.</returns>
-        protected abstract bool EsPequenio(object instancia);
+        protected abstract bool EsPequenio(Instancia instancia);
 
         /// <summary>
         /// Resuelve el problema cuando es lo suficientemente pequeño.
@@ -45,7 +45,7 @@ namespace DAA_P03.Parte1_Ordenamiento.Base
         /// </summary>
         /// <param name="instancia">La instancia pequeña a resolver.</param>
         /// <returns>La solución para el caso base.</returns>
-        protected abstract object ResolverPequenio(object instancia);
+        protected abstract Solucion ResolverPequenio(Instancia instancia);
 
         /// <summary>
         /// Divide la instancia en dos subproblemas.
@@ -53,7 +53,7 @@ namespace DAA_P03.Parte1_Ordenamiento.Base
         /// </summary>
         /// <param name="instancia">La instancia a dividir.</param>
         /// <returns>Un array con dos subproblemas.</returns>
-        protected abstract object[] Dividir(object instancia);
+        protected abstract Instancia[] Dividir(Instancia instancia);
 
         /// <summary>
         /// Combina dos soluciones en una solución completa.
@@ -62,7 +62,7 @@ namespace DAA_P03.Parte1_Ordenamiento.Base
         /// <param name="solucion1">Primera solución parcial.</param>
         /// <param name="solucion2">Segunda solución parcial.</param>
         /// <returns>La solución combinada.</returns>
-        protected abstract object Combinar(object solucion1, object solucion2);
+        protected abstract Solucion Combinar(Solucion solucion1, Solucion solucion2);
 
         /// <summary>
         /// Método plantilla que implementa el algoritmo de Divide y Vencerás.
@@ -70,26 +70,20 @@ namespace DAA_P03.Parte1_Ordenamiento.Base
         /// </summary>
         /// <param name="instancia">La instancia del problema.</param>
         /// <returns>La solución completa.</returns>
-        protected object ResolverDivideYVenceras(object instancia)
+        protected Solucion ResolverDivideYVenceras(Instancia instancia)
         {
-            // Caso base: si es pequeño, resolvemos directamente
             if (EsPequenio(instancia))
             {
                 return ResolverPequenio(instancia);
             }
             else
             {
-                // División: dividimos el problema en dos subproblemas
-                object[] subproblemas = Dividir(instancia);
+                Instancia[] subproblemas = Dividir(instancia);
 
-                // ! Y si no es un DyV binario? usar for en ese caso y no en dos subproblemas, sino n subproblemas.
-                // Conquista recursiva: resolvemos cada subproblema
-                object solucion1 = ResolverDivideYVenceras(subproblemas[0]);
-                object solucion2 = ResolverDivideYVenceras(subproblemas[1]);
+                Solucion solucion1 = ResolverDivideYVenceras(subproblemas[0]);
+                Solucion solucion2 = ResolverDivideYVenceras(subproblemas[1]);
 
-                // ! n subproblemas en vez de 2
-                // Combinación: unimos las soluciones
-                object solucionFinal = Combinar(solucion1, solucion2);
+                Solucion solucionFinal = Combinar(solucion1, solucion2);
 
                 return solucionFinal;
             }
@@ -101,7 +95,7 @@ namespace DAA_P03.Parte1_Ordenamiento.Base
         /// </summary>
         /// <param name="instancia">La instancia a resolver.</param>
         /// <returns>La solución completa.</returns>
-        public override object Resolver(object instancia)
+        public override Solucion Resolver(Instancia instancia)
         {
             return ResolverDivideYVenceras(instancia);
         }

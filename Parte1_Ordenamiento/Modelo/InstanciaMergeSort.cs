@@ -5,23 +5,23 @@ using DAA_P03.Parte1_Ordenamiento.Base;
 namespace DAA_P03.Parte1_Ordenamiento.Modelo
 {
     /// <summary>
-    /// Representa una instancia del problema QuickSort.
-    /// Contiene un array compartido con referencias start/final que delimitan el rango de trabajo.
-    /// Esta implementación permite particionamiento in-place eficiente.
+    /// Representa una instancia del problema MergeSort.
+    /// Contiene un array compartido con referencias start/final/middle que delimitan el rango de trabajo.
+    /// Esta implementación permite trabajar con rangos sin copiar datos innecesariamente en la fase de división.
     /// </summary>
-    public class InstanciaQuickSort : Instancia
+    public class InstanciaMergeSort : Instancia
     {
         public int Start { get; private set; }
         public int Final { get; private set; }
+        public int Middle { get; private set; }
         public int[] Vector { get; private set; }
-        public int Pivot { get; private set; }
         public override int Tamaño => Final - Start + 1;
 
         /// <summary>
         /// Constructor principal que inicializa una instancia con un array completo.
         /// </summary>
         /// <param name="data">Array de números a ordenar.</param>
-        public InstanciaQuickSort(int[] data)
+        public InstanciaMergeSort(int[] data)
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data), "El array no puede ser nulo.");
@@ -29,7 +29,7 @@ namespace DAA_P03.Parte1_Ordenamiento.Modelo
             Start = 0;
             Final = data.Length - 1;
             Vector = data;
-            Pivot = (Start + Final) / 2;
+            Middle = (Start + Final) / 2;
         }
 
         /// <summary>
@@ -38,16 +38,16 @@ namespace DAA_P03.Parte1_Ordenamiento.Modelo
         /// </summary>
         /// <param name="start">Índice inicial del rango.</param>
         /// <param name="final">Índice final del rango.</param>
-        /// <param name="pivot">Índice del pivote.</param>
+        /// <param name="middle">Índice del punto medio.</param>
         /// <param name="vector">Referencia al array compartido.</param>
-        public InstanciaQuickSort(int start, int final, int pivot, int[] vector)
+        public InstanciaMergeSort(int start, int final, int middle, int[] vector)
         {
             if (vector == null)
                 throw new ArgumentNullException(nameof(vector), "El array no puede ser nulo.");
             
             Start = start;
             Final = final;
-            Pivot = pivot;
+            Middle = middle;
             Vector = vector;
         }
 
@@ -59,7 +59,7 @@ namespace DAA_P03.Parte1_Ordenamiento.Modelo
         public override Instancia ObtenerCopia()
         {
             int[] vectorClonado = (int[])Vector.Clone();
-            return new InstanciaQuickSort(Start, Final, Pivot, vectorClonado);
+            return new InstanciaMergeSort(Start, Final, Middle, vectorClonado);
         }
 
         /// <summary>

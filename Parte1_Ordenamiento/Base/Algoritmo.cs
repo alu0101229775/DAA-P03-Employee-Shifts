@@ -44,17 +44,17 @@ namespace DAA_P03.Parte1_Ordenamiento.Base
         /// </summary>
         /// <param name="instancia">La instancia del problema a resolver.</param>
         /// <returns>La solución del problema.</returns>
-        public abstract object Resolver(object instancia);
+        public abstract Solucion Resolver(Instancia instancia);
 
         /// <summary>
         /// Resuelve un problema y mide el tiempo de ejecución.
         /// </summary>
         /// <param name="instancia">La instancia a resolver.</param>
         /// <returns>La solución obtenida.</returns>
-        public object ResolverConTiempo(object instancia)
+        public Solucion ResolverConTiempo(Instancia instancia)
         {
             var stopwatch = Stopwatch.StartNew();
-            object resultado = Resolver(instancia);
+            Solucion resultado = Resolver(instancia);
             stopwatch.Stop();
             TiempoEjecucion = stopwatch.ElapsedMilliseconds;
             return resultado;
